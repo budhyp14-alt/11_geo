@@ -104,10 +104,9 @@
 
     <script>
         // =========================================================================
-        // KUNCI PENGATURAN API & GOOGLE SHEET (GANTI BAGIAN INI SAJA)
+        // KODE API SUDAH DIMASUKKAN LANGSUNG UNTUK ANDA
         // =========================================================================
         const URL_GOOGLE_SCRIPT = "https://script.google.com/macros/s/AKfycbwGVYEuYS6BNSuRbGXmAj08yOHnTaPqXYFefPO4S-N-r7QEELyNzx-TWooU6kmvBgXK/exec"; 
-        
         const API_KEY_GEMINI = "AIzaSyANlsZCefeR4DMx5VorkMzHPlXQpdR7QW0zz";
         // =========================================================================
 
@@ -148,37 +147,60 @@
         });
         pgContainer.innerHTML = pgHtml;
 
+        // FUNGSI KOREKSI AI DENGAN JARING PENGAMAN DAN REGEX
         async function koreksiEsaiDenganAI(jawaban) {
-            if (API_KEY_GEMINI === "PASTE_API_KEY_GEMINI_ANDA_DISINI" || !API_KEY_GEMINI) {
-                let skorCadangan = 0;
-                jawaban.forEach(jawab => { if(jawab.length > 5) skorCadangan += 6; });
-                return skorCadangan;
-            }
+            // Fungsi hitung cadangan jika API error (6 poin per kotak yang diisi)
+            const hitungCadangan = () => {
+                let skor = 0;
+                jawaban.forEach(jawab => { if(jawab.length > 5) skor += 6; });
+                return skor;
+            };
 
             const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY_GEMINI}`;
-            const prompt = `Bertindaklah sebagai Guru Geografi. Berikan NILAI TOTAL untuk 5 jawaban esai siswa ini. Bobot per soal maksimal 6. Total maksimal 30.
-            Kunci ideal:
-            1. Iklim penentu utama fotosintesis dan batas toleransi hidup (6).
-            2. Pasir pori besar tidak tahan air, lempung pori rapat simpan air (6).
-            3. Panas (padi), Sedang (kopi), Sejuk (pinus), Dingin (edelweiss) (6).
-            4. Perluas: bawa bibit sawit; Merusak: babat hutan (6).
-            5. Saling interelasi rantai ekosistem, 1 hancur maka pakan hilang, hewan punah (6).
+            const prompt = `Berikan HANYA SATU ANGKA TOTAL SKOR (0-30) untuk 5 jawaban esai ini. Jangan beri kalimat pengantar.
+            Kunci ideal (bobot maks 6 per soal):
+            1. Iklim penentu utama batas toleransi (6)
+            2. Pasir pori besar tidak tahan air, lempung pori rapat simpan air (6)
+            3. Panas (padi), Sedang (kopi), Sejuk (pinus), Dingin (edelweiss) (6)
+            4. Perluas: bawa bibit sawit; Merusak: babat hutan (6)
+            5. Rantai ekosistem terhubung, 1 hancur maka pakan hilang (6)
             
             Jawaban Siswa:
             1. ${jawaban[0]}
             2. ${jawaban[1]}
             3. ${jawaban[2]}
             4. ${jawaban[3]}
-            5. ${jawaban[4]}
-            
-            Jawab HANYA DENGAN SATU ANGKA TOTAL SKOR (0-30) tanpa tambahan huruf atau titik apa pun.`;
+            5. ${jawaban[4]}`;
 
             try {
-                const response = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }) });
+                const response = await fetch(url, { 
+                    method: "POST", 
+                    headers: { "Content-Type": "application/json" }, 
+                    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }) 
+                });
+                
                 const data = await response.json();
-                return parseInt(data.candidates[0].content.parts[0].text.trim()) || 0;
+                
+                // Jika Google menolak koneksi/eror, jalankan nilai cadangan
+                if (!response.ok) {
+                    console.error("API Error Response:", data);
+                    return hitungCadangan();
+                }
+
+                // Mengekstrak khusus angka dari teks balasan AI menggunakan Regex
+                let teksJawabanAI = data.candidates[0].content.parts[0].text;
+                let temuanAngka = teksJawabanAI.match(/\d+/); 
+                
+                if (temuanAngka) {
+                    let nilai = parseInt(temuanAngka[0]);
+                    return nilai > 30 ? 30 : nilai; // Pastikan tidak tembus batas maksimal 30
+                } else {
+                    return hitungCadangan(); // Jika AI membalas tanpa angka sama sekali
+                }
+
             } catch (error) {
-                return 0; 
+                console.error("Fetch API Error:", error);
+                return hitungCadangan(); // Jalankan cadangan jika jaringan terputus
             }
         }
 
@@ -200,7 +222,7 @@
             btn.disabled = true;
             kotakStatus.classList.remove('hidden');
             rincianBox.classList.add('hidden');
-            teksStatus.innerHTML = "<i class='fa-solid fa-spinner fa-spin text-4xl mb-2'></i><br>Sedang mengoreksi otomatis...";
+            teksStatus.innerHTML = "<i class='fa-solid fa-spinner fa-spin text-4xl mb-2'></i><br>AI Sedang Membaca Esai Anda...";
 
             let skorPG = 0;
             dataPG.forEach((item, i) => {
@@ -232,7 +254,7 @@
             const payload = { namaSiswa: nama, kelasSiswa: kelas, absenSiswa: absen, skorPG: skorPG, skorJodoh: skorJodoh, skorEsai: skorEsai, skorTotal: skorTotal };
 
             try {
-                teksStatus.innerHTML += "<br><span class='text-sm text-green-300 font-normal'>Menyimpan ke Database Guru...</span>";
+                teksStatus.innerHTML += "<br><span class='text-sm text-green-300 font-normal'>Menyimpan ke Data Guru...</span>";
                 await fetch(URL_GOOGLE_SCRIPT, {
                     method: 'POST',
                     mode: 'no-cors',
@@ -241,9 +263,10 @@
                 });
                 teksStatus.innerHTML = "<i class='fa-solid fa-circle-check text-green-400 text-4xl mb-2'></i><br>NILAI BERHASIL DISIMPAN KE GOOGLE SHEET GURU!";
             } catch (err) {
-                teksStatus.innerHTML += "<br><span class='text-sm text-red-400 font-normal'>Gagal terhubung ke Google Sheet.</span>";
+                teksStatus.innerHTML += "<br><span class='text-sm text-red-400 font-normal'>Gagal mengirim ke Google Sheet.</span>";
             }
-            btn.innerHTML = "<i class='fa-solid fa-check-to-slot'></i> Selesai";
+            btn.innerHTML = "<i class='fa-solid fa-check-to-slot'></i> Coba Hitung Lagi";
+            btn.disabled = false;
         }
     </script>
 </body>
