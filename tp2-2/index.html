@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modul & LKPD TP 2.2 - Karakteristik Bioma Terestrial Dunia</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome 6 Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        
+        /* Navigasi Kotak Menu Berputar 360 Derajat */
+        .menu-box {
+            transition: transform 1.2s ease-in-out, box-shadow 0.3s ease;
+            transform-style: preserve-3d;
+        }
+        .menu-box:hover {
+            transform: rotateY(360deg);
+        }
+
+        /* Palet Warna Kustom */
+        .bg-custom-purple { background-color: #8B008B; }
+        .bg-custom-blue { background-color: #0000FF; }
+        .bg-custom-lime { background-color: #00FF00; }
+        .bg-custom-yellow { background-color: #FFFF00; }
+        .bg-custom-orange { background-color: #FFA500; }
+        .bg-custom-red { background-color: #FF0000; }
+        .bg-custom-darkgreen { background-color: #008000; }
+
+        .border-custom-purple { border-color: #8B008B; }
+        .border-custom-blue { border-color: #0000FF; }
+        .border-custom-lime { border-color: #00FF00; }
+        .border-custom-yellow { border-color: #FFFF00; }
+        .border-custom-orange { border-color: #FFA500; }
+        .border-custom-red { border-color: #FF0000; }
+        .border-custom-darkgreen { border-color: #008000; }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-slate-950 via-indigo-950 to-purple-950 min-h-screen text-slate-100 antialiased selection:bg-custom-yellow selection:text-black">
+
+    <!-- NAVIGASI HORIZONTAL ATAS (HOVER 360 DERAJAT) -->
+    <header class="sticky top-0 z-50 bg-gradient-to-r from-purple-900 via-indigo-900 to-slate-900/95 backdrop-blur-md border-b-4 border-custom-yellow shadow-2xl p-3">
+        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-center gap-2 sm:gap-3">
+            <a href="#identitas" class="menu-box bg-custom-purple text-white font-extrabold text-xs sm:text-sm py-3 px-4 rounded-2xl flex items-center gap-2 shadow-lg border-2 border-fuchsia-300">
+                <i class="fa-solid fa-id-card fa-beat"></i> Identitas
+            </a>
+            <a href="#tujuan" class="menu-box bg-custom-blue text-white font-extrabold text-xs sm:text-sm py-3 px-4 rounded-2xl flex items-center gap-2 shadow-lg border-2 border-cyan-300">
+                <i class="fa-solid fa-bullseye fa-spin"></i> Tujuan
+            </a>
+            <a href="#pemantik" class="menu-box bg-custom-lime text-black font-extrabold text-xs sm:text-sm py-3 px-4 rounded-2xl flex items-center gap-2 shadow-lg border-2 border-emerald-300">
+                <i class="fa-solid fa-lightbulb fa-bounce"></i> Pemantik
+            </a>
+            <a href="#materi" class="menu-box bg-custom-yellow text-black font-extrabold text-xs sm:text-sm py-3 px-4 rounded-2xl flex items-center gap-2 shadow-lg border-2 border-amber-500">
+                <i class="fa-solid fa-book-open-reader fa-fade"></i> Materi
+            </a>
+            <a href="#lkpd" class="menu-box bg-teal-500 text-black font-extrabold text-xs sm:text-sm py-3 px-4 rounded-2xl flex items-center gap-2 shadow-lg border-2 border-teal-200">
+                <i class="fa-solid fa-clipboard-question fa-bounce"></i> LKPD
+            </a>
+            <a href="#pg" class="menu-box bg-custom-orange text-black font-extrabold text-xs sm:text-sm py-3 px-4 rounded-2xl flex items-center gap-2 shadow-lg border-2 border-orange-200">
+                <i class="fa-solid fa-list-check fa-shake"></i> Pilihan Ganda
+            </a>
+            <a href="#jodoh" class="menu-box bg-custom-red text-white font-extrabold text-xs sm:text-sm py-3 px-4 rounded-2xl flex items-center gap-2 shadow-lg border-2 border-rose-300">
+                <i class="fa-solid fa-puzzle-piece fa-flip"></i> Menjodohkan
+            </a>
+            <a href="#esai" class="menu-box bg-custom-darkgreen text-white font-extrabold text-xs sm:text-sm py-3 px-4 rounded-2xl flex items-center gap-2 shadow-lg border-2 border-green-300">
+                <i class="fa-solid fa-pen-nib fa-beat-fade"></i> Soal Esai
+            </a>
+            <a href="#skor" onclick="muatDataSkorDariSheet()" class="menu-box bg-gradient-to-r from-red-600 to-orange-500 text-white font-extrabold text-xs sm:text-sm py-3 px-4 rounded-2xl flex items-center gap-2 shadow-lg border-2 border-yellow-300">
+                <i class="fa-solid fa-calculator fa-beat"></i> Skor
+            </a>
+            <a href="#refleksi" class="menu-box bg-gradient-to-r from-purple-600 to-pink-600 text-white font-extrabold text-xs sm:text-sm py-3 px-4 rounded-2xl flex items-center gap-2 shadow-lg border-2 border-pink-300">
+                <i class="fa-solid fa-heart fa-bounce"></i> Refleksi
+            </a>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-4 py-8 space-y-12">
+
+        <!-- JUDUL MODUL -->
+        <div class="text-center bg-gradient-to-r from-purple-800 via-indigo-700 to-blue-800 p-8 rounded-3xl border-4 border-custom-yellow shadow-2xl relative overflow-hidden">
+            <span class="bg-custom-yellow text-black font-black text-xs sm:text-sm uppercase tracking-widest px-4 py-2 rounded-full inline-block shadow-md mb-4 border-2 border-black">
+                <i class="fa-solid fa-graduation-cap me-1"></i> KELAS XI IPS (FASE F)
+            </span>
+            <h1 class="text-3xl sm:text-5xl font-black text-white tracking-tight leading-tight">
+                BAB 2: BIOSFER DAN KEANEKARAGAMAN HAYATI
+            </h1>
+            <p class="text-xl sm:text-2xl font-extrabold text-yellow-300 mt-2">
+                SUBBAB 2: Karakteristik Bioma Terestrial Dunia dan Adaptasi Makhluk Hidup
+            </p>
+            <div class="inline-block mt-4 bg-black/40 backdrop-blur px-5 py-2 rounded-2xl border border-white/20">
+                <p class="text-cyan-300 font-bold text-sm sm:text-base">
+                    <i class="fa-solid fa-compass-drafting text-custom-lime fa-spin me-2"></i>Pendekatan: Pembelajaran Mendalam (Deep Learning: Mindful, Meaningful, & Joyful)
+                </p>
+            </div>
+        </div>
+
+        <!-- FORM IDENTITAS SISWA -->
+        <section id="identitas" class="bg-custom-yellow p-6 sm:p-8 rounded-3xl border-8 border-custom-orange shadow-2xl text-black">
+            <h2 class="text-2xl sm:text-3xl font-black mb-6 flex items-center gap-3 border-b-4 border-black pb-3">
+                <i class="fa-solid fa-id-badge fa-bounce text-custom-purple text-4xl"></i>
+                IDENTITAS PESERTA DIDIK
+            </h2>
+            <div class="grid grid-cols-1 sm:grid-cols-4 gap-6">
+                <div class="sm:col-span-2">
+                    <label class="block font-black text-sm uppercase tracking-wider mb-2">Nama Lengkap Siswa:</label>
+                    <input type="text" id="namaSiswa" placeholder="Ketik nama lengkap Anda..." class="w-full p-4 rounded-2xl bg-white border-4 border-custom-blue text-black font-extrabold text-base focus:outline-none focus:ring-4 focus:ring-purple-500 shadow-inner" required>
+                </div>
+                <div>
+                    <label class="block font-black text-sm uppercase tracking-wider mb-2">Kelas:</label>
+                    <input type="text" id="kelasSiswa" placeholder="Contoh: XI IPS 1" class="w-full p-4 rounded-2xl bg-white border-4 border-custom-blue text-black font-extrabold text-base focus:outline-none focus:ring-4 focus:ring-purple-500 shadow-inner" required>
+                </div>
+                <div>
+                    <label class="block font-black text-sm uppercase tracking-wider mb-2">No. Absen:</label>
+                    <input type="number" id="absenSiswa" placeholder="Contoh: 14" class="w-full p-4 rounded-2xl bg-white border-4 border-custom-blue text-black font-extrabold text-base focus:outline-none focus:ring-4 focus:ring-purple-500 shadow-inner" required>
+                </div>
+            </div>
+        </section>
+
+        <!-- I. TUJUAN PEMBELAJARAN -->
+        <section id="tujuan" class="bg-custom-purple p-6 sm:p-10 rounded-3xl border-8 border-custom-lime shadow-2xl text-white">
+            <div class="flex items-center gap-4 mb-6 border-b-4 border-custom-lime pb-4">
+                <div class="w-14 h-14 rounded-2xl bg-custom-lime text-black flex items-center justify-center text-3xl font-black shadow-lg">
+                    <i class="fa-solid fa-bullseye fa-shake"></i>
+                </div>
+                <div>
+                    <span class="text-xs uppercase tracking-widest font-black text-lime-300">Bagian I</span>
+                    <h2 class="text-2xl sm:text-4xl font-black">TUJUAN PEMBELAJARAN (TP 2.2)</h2>
+                </div>
+            </div>
+            <div class="bg-purple-950/70 p-6 rounded-2xl border-4 border-fuchsia-400">
+                <p class="text-base sm:text-lg font-bold leading-relaxed text-white">
+                    Mengidentifikasi karakteristik bioma terestrial utama dunia (tundra, taiga, gurun, sabana, stepa, hutan gugur, dan hutan hujan tropis) serta adaptasi morfologi flora-fauna di dalamnya (Mindful).
+                </p>
+            </div>
+        </section>
+
+        <!-- II. PERTANYAAN PEMANTIK (INTERAKTIF ACCORDION) -->
+        <section id="pemantik" class="bg-custom-blue p-6 sm:p-10 rounded-3xl border-8 border-custom-yellow shadow-2xl text-white">
+            <div class="flex items-center gap-4 mb-6 border-b-4 border-custom-yellow pb-4">
+                <div class="w-14 h-14 rounded-2xl bg-custom-yellow text-black flex items-center justify-center text-3xl font-black shadow-lg">
+                    <i class="fa-solid fa-lightbulb fa-beat"></i>
+                </div>
+                <div>
+                    <span class="text-xs uppercase tracking-widest font-black text-yellow-300">Bagian II</span>
+                    <h2 class="text-2xl sm:text-4xl font-black">PERTANYAAN PEMANTIK & PENJELASAN</h2>
+                </div>
+            </div>
+            <p class="text-slate-200 font-bold mb-6 text-base sm:text-lg">
+                Klik setiap kartu di bawah untuk membuka dan membaca penjelasan mendalamnya:
+            </p>
+
+            <div class="space-y-5">
+                <div class="bg-blue-950 p-6 rounded-2xl border-4 border-cyan-400 shadow-xl">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                        <div class="flex items-start gap-3">
+                            <span class="px-3 py-1 rounded-xl bg-custom-yellow text-black font-black text-xs uppercase">No. 1</span>
+                            <h3 class="text-lg sm:text-xl font-black text-white">
+                                Mengapa pepohonan di negara empat musim menggugurkan seluruh daunnya menjelang musim dingin, sedangkan pepohonan di hutan Kalimantan tetap hijau sepanjang tahun?
+                            </h3>
+                        </div>
+                        <button type="button" onclick="toggleAccordion('ans1', 'icon1')" class="px-4 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-black text-xs sm:text-sm flex items-center gap-2 shrink-0">
+                            <span>Buka Penjelasan</span>
+                            <i id="icon1" class="fa-solid fa-chevron-down transition-transform"></i>
+                        </button>
+                    </div>
+                    <div id="ans1" class="hidden mt-4 pt-4 border-t-2 border-cyan-800 bg-blue-900/60 p-4 rounded-xl text-yellow-200 text-base font-semibold leading-relaxed">
+                        Di wilayah empat musim, air tanah membeku saat musim dingin sehingga akar tidak bisa menyerap air; pohon menggugurkan daun agar tidak kehabisan cairan tubuh. Sebaliknya, hutan Kalimantan mendapat hujan dan sinar matahari sepanjang tahun sehingga pohon terus berfotosintesis.
+                    </div>
+                </div>
+
+                <div class="bg-blue-950 p-6 rounded-2xl border-4 border-cyan-400 shadow-xl">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                        <div class="flex items-start gap-3">
+                            <span class="px-3 py-1 rounded-xl bg-custom-lime text-black font-black text-xs uppercase">No. 2</span>
+                            <h3 class="text-lg sm:text-xl font-black text-white">
+                                Mengapa tanaman kaktus di bioma Gurun memodifikasi daunnya menjadi duri dan memiliki batang tebal berlapis lilin?
+                            </h3>
+                        </div>
+                        <button type="button" onclick="toggleAccordion('ans2', 'icon2')" class="px-4 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-black text-xs sm:text-sm flex items-center gap-2 shrink-0">
+                            <span>Buka Penjelasan</span>
+                            <i id="icon2" class="fa-solid fa-chevron-down transition-transform"></i>
+                        </button>
+                    </div>
+                    <div id="ans2" class="hidden mt-4 pt-4 border-t-2 border-cyan-800 bg-blue-900/60 p-4 rounded-xl text-lime-200 text-base font-semibold leading-relaxed">
+                        Curah hujan di gurun sangat rendah (&lt;250 mm/tahun) dan suhu siang hari mencapai 45°C. Daun berbentuk duri dan batang berlapis lilin berfungsi menekan laju penguapan air (transpirasi) serta menyimpan cadangan air di dalam batang.
+                    </div>
+                </div>
+
+                <div class="bg-blue-950 p-6 rounded-2xl border-4 border-cyan-400 shadow-xl">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                        <div class="flex items-start gap-3">
+                            <span class="px-3 py-1 rounded-xl bg-custom-orange text-black font-black text-xs uppercase">No. 3</span>
+                            <h3 class="text-lg sm:text-xl font-black text-white">
+                                Mengapa di bioma Tundra tidak ada pohon besar yang sanggup tumbuh, melainkan hanya lumut kerak (lichens) dan rumput kerdil?
+                            </h3>
+                        </div>
+                        <button type="button" onclick="toggleAccordion('ans3', 'icon3')" class="px-4 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-black text-xs sm:text-sm flex items-center gap-2 shrink-0">
+                            <span>Buka Penjelasan</span>
+                            <i id="icon3" class="fa-solid fa-chevron-down transition-transform"></i>
+                        </button>
+                    </div>
+                    <div id="ans3" class="hidden mt-4 pt-4 border-t-2 border-cyan-800 bg-blue-900/60 p-4 rounded-xl text-orange-200 text-base font-semibold leading-relaxed">
+                        Kawasan Tundra di lingkar kutub Arktik memiliki lapisan tanah bawah yang membeku secara permanen (permafrost), sehingga akar pohon berkayu tidak mampu menembus tanah dan hanya tumbuhan perintis berakar dangkal seperti lumut yang dapat bertahan hidup.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- III. MATERI PEMBELAJARAN LENGKAP -->
+        <section id="materi" class="space-y-10">
+            <div class="bg-custom-darkgreen p-6 sm:p-10 rounded-3xl border-8 border-custom-lime shadow-2xl text-white space-y-8">
+                <div class="flex items-center gap-4 border-b-4 border-custom-lime pb-4">
+                    <div class="w-14 h-14 rounded-2xl bg-custom-lime text-black flex items-center justify-center text-3xl font-black shadow-lg">
+                        <i class="fa-solid fa-earth-americas fa-bounce"></i>
+                    </div>
+                    <div>
+                        <span class="text-xs uppercase tracking-widest font-black text-lime-300">Bagian III</span>
+                        <h2 class="text-2xl sm:text-4xl font-black">MATERI PEMBELAJARAN UTAMA</h2>
+                    </div>
+                </div>
+
+                <!-- A. Tujuh Bioma Terestrial Utama Dunia -->
+                <div class="space-y-4">
+                    <h3 class="text-xl sm:text-2xl font-black text-custom-yellow">
+                        A. Penjelasan Materi: Tujuh Bioma Terestrial Utama Dunia
+                    </h3>
+                    <div class="bg-black/30 p-5 rounded-2xl border-2 border-white/20 text-base sm:text-lg font-bold leading-relaxed">
+                        <strong>Bioma</strong> adalah ekosistem daratan berskala luas yang memiliki ciri khas vegetasi dominan akibat pengaruh iklim regional. Urutan tujuh bioma utama dunia berdasarkan ketersediaan air dan suhu adalah:
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm sm:text-base">
+                        <div class="bg-emerald-950/90 p-5 rounded-2xl border-2 border-lime-400">
+                            <h4 class="font-black text-lg text-custom-lime mb-1">1. Hutan Hujan Tropis (Tropical Rainforest)</h4>
+                            <p class="text-slate-100 font-semibold leading-relaxed">Terletak di sekitar khatulistiwa (0° - 10° LU/LS). Curah hujan sangat tinggi (&gt;2.000 mm/tahun), kelembapan tinggi, pohon tinggi berdaun lebar membentuk tudung berlapis (kanopi), serta ditumbuhi tanaman merambat (liana) dan menempel (epifit).</p>
+                        </div>
+                        <div class="bg-emerald-950/90 p-5 rounded-2xl border-2 border-lime-400">
+                            <h4 class="font-black text-lg text-custom-lime mb-1">2. Sabana (Savanna)</h4>
+                            <p class="text-slate-100 font-semibold leading-relaxed">Padang rumput luas yang diselingi pepohonan perdu atau pohon akasia secara menyebar. Terbentuk di daerah tropis/subtropis dengan musim kemarau yang lebih panjang daripada musim penghujan.</p>
+                        </div>
+                        <div class="bg-emerald-950/90 p-5 rounded-2xl border-2 border-lime-400">
+                            <h4 class="font-black text-lg text-custom-lime mb-1">3. Stepa (Steppe/Prairie)</h4>
+                            <p class="text-slate-100 font-semibold leading-relaxed">Padang rumput murni tanpa diselingi pepohonan besar karena curah hujan rendah (250 - 500 mm/tahun) yang tidak cukup untuk menopang pertumbuhan pohon berkayu.</p>
+                        </div>
+                        <div class="bg-emerald-950/90 p-5 rounded-2xl border-2 border-lime-400">
+                            <h4 class="font-black text-lg text-custom-lime mb-1">4. Gurun (Desert)</h4>
+                            <p class="text-slate-100 font-semibold leading-relaxed">Kawasan kering ekstrem dengan curah hujan di bawah 250 mm/tahun. Suhu siang hari sangat panas (mencapai 45°C) dan malam hari sangat dingin, didominasi tumbuhan tahan kering (xerofit).</p>
+                        </div>
+                        <div class="bg-emerald-950/90 p-5 rounded-2xl border-2 border-lime-400">
+                            <h4 class="font-black text-lg text-custom-lime mb-1">5. Hutan Gugur (Deciduous Forest)</h4>
+                            <p class="text-slate-100 font-semibold leading-relaxed">Terletak di wilayah beriklim sedang (30° - 50° LU/LS) yang memiliki empat musim (semi, panas, gugur, dingin). Pohon berdaun lebar menggugurkan daunnya saat musim gugur.</p>
+                        </div>
+                        <div class="bg-emerald-950/90 p-5 rounded-2xl border-2 border-lime-400">
+                            <h4 class="font-black text-lg text-custom-lime mb-1">6. Taiga (Boreal Forest)</h4>
+                            <p class="text-slate-100 font-semibold leading-relaxed">Hutan pohon berdaun jarum (konifer) seperti pinus dan cemara di wilayah sub-arktik (Rusia, Kanada). Memiliki musim dingin yang panjang dan musim panas yang sangat singkat.</p>
+                        </div>
+                        <div class="bg-emerald-950/90 p-5 rounded-2xl border-2 border-lime-400 md:col-span-2">
+                            <h4 class="font-black text-lg text-custom-lime mb-1">7. Tundra</h4>
+                            <p class="text-slate-100 font-semibold leading-relaxed">Kawasan tanpa pohon di lingkar kutub Arktik atau puncak gunung tertinggi karena tanahnya membeku secara permanen (permafrost). Hanya ditumbuhi lumut kerak (lichens) dan rumput kerdil.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- B. Grafik Penjelas -->
+                <div class="space-y-3">
+                    <h3 class="text-xl sm:text-2xl font-black text-custom-yellow">
+                        B. Grafik Penjelas: Sebaran Bioma Berdasarkan Suhu dan Curah Hujan
+                    </h3>
+                    <pre class="bg-slate-950 text-lime-300 p-5 rounded-2xl overflow-x-auto text-xs sm:text-sm font-mono border-4 border-custom-yellow shadow-xl leading-snug">
+Curah Hujan 
+(mm/tahun)
+  4.000 ^
+        |                                       +-----------------------+
+  3.000 |                                       |  HUTAN HUJAN TROPIS   |
+        |                                       |  (Pohon Kanopi Lebat) |
+  2.000 |                    +------------------+-----------------------+
+        |                    |   HUTAN GUGUR    |        SABANA         |
+  1.000 |       +------------+ (4 Musim/Meranggas)   (Rumput + Pohon)   |
+        |       |   TAIGA    +------------------+-----------------------+
+    500 |       | (Konifer/  |           STEPA (Padang Rumput)          |
+        | +-----+ Daun Jarum)+------------------------------------------+
+    250 | |TUNDRA|                     GURUN (Pasir & Kaktus)           |
+      0 +-+-----+------------+------------------+-----------------------+--->
+        -10°C   0°C         10°C               20°C                    30°C
+                            Suhu Rata-Rata Tahunan (°C)</pre>
+                </div>
+
+                <!-- C. Tabel Karakteristik & Contoh Adaptasi Morfologi Bioma -->
+                <div class="space-y-3">
+                    <h3 class="text-xl sm:text-2xl font-black text-custom-yellow">
+                        C. Tabel Karakteristik & Contoh Adaptasi Morfologi Bioma
+                    </h3>
+                    <div class="overflow-x-auto rounded-2xl border-4 border-custom-yellow shadow-2xl">
+                        <table class="w-full text-left border-collapse bg-white text-black font-semibold text-xs sm:text-sm">
+                            <thead>
+                                <tr class="bg-black text-custom-yellow text-sm sm:text-base font-black border-b-4 border-custom-yellow">
+                                    <th class="p-4 border-r border-slate-600">Nama Bioma</th>
+                                    <th class="p-4 border-r border-slate-600">Curah Hujan</th>
+                                    <th class="p-4 border-r border-slate-600">Flora Khas</th>
+                                    <th class="p-4 border-r border-slate-600">Fauna Khas</th>
+                                    <th class="p-4">Adaptasi Morfologi/Perilaku</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y-2 divide-slate-300">
+                                <tr class="bg-emerald-50">
+                                    <td class="p-3 font-black text-emerald-900 border-r border-slate-300">Hutan Hujan Tropis</td>
+                                    <td class="p-3 border-r border-slate-300">&gt;2.000 mm</td>
+                                    <td class="p-3 border-r border-slate-300">Meranti, Rotan, Anggrek</td>
+                                    <td class="p-3 border-r border-slate-300">Orangutan, Harimau, Burung Cenderawasih</td>
+                                    <td class="p-3">Daun lebar tipis untuk mempercepat penguapan; kera berlengan panjang.</td>
+                                </tr>
+                                <tr class="bg-amber-50">
+                                    <td class="p-3 font-black text-amber-900 border-r border-slate-300">Sabana</td>
+                                    <td class="p-3 border-r border-slate-300">900 - 1.500 mm</td>
+                                    <td class="p-3 border-r border-slate-300">Akasia, Lontar, Eukaliptus</td>
+                                    <td class="p-3 border-r border-slate-300">Zebra, Jerapah, Singa, Kuda</td>
+                                    <td class="p-3">Leher panjang jerapah meraih pucuk pohon; akar rumput dalam.</td>
+                                </tr>
+                                <tr class="bg-yellow-50">
+                                    <td class="p-3 font-black text-yellow-900 border-r border-slate-300">Stepa</td>
+                                    <td class="p-3 border-r border-slate-300">250 - 500 mm</td>
+                                    <td class="p-3 border-r border-slate-300">Rumput pendek, Semak belukar</td>
+                                    <td class="p-3 border-r border-slate-300">Bison, Kanguru, Domba</td>
+                                    <td class="p-3">Kaki hewan kuat untuk berlari cepat di padang terbuka.</td>
+                                </tr>
+                                <tr class="bg-orange-50">
+                                    <td class="p-3 font-black text-orange-900 border-r border-slate-300">Gurun</td>
+                                    <td class="p-3 border-r border-slate-300">&lt;250 mm</td>
+                                    <td class="p-3 border-r border-slate-300">Kaktus, Kurma, Semak duri</td>
+                                    <td class="p-3 border-r border-slate-300">Unta, Ular derik, Kalajengking</td>
+                                    <td class="p-3">Daun kaktus berbentuk duri; unta berpunuk penyimpan lemak.</td>
+                                </tr>
+                                <tr class="bg-rose-50">
+                                    <td class="p-3 font-black text-rose-900 border-r border-slate-300">Hutan Gugur</td>
+                                    <td class="p-3 border-r border-slate-300">750 - 1.000 mm</td>
+                                    <td class="p-3 border-r border-slate-300">Maple, Oak, Sakura, Jati</td>
+                                    <td class="p-3 border-r border-slate-300">Beruang coklat, Rusa, Tupai</td>
+                                    <td class="p-3">Pohon menggugurkan daun (meranggas); hewan tidur panjang (hibernasi).</td>
+                                </tr>
+                                <tr class="bg-teal-50">
+                                    <td class="p-3 font-black text-teal-900 border-r border-slate-300">Taiga</td>
+                                    <td class="p-3 border-r border-slate-300">400 - 750 mm</td>
+                                    <td class="p-3 border-r border-slate-300">Pinus, Cemara, Alder</td>
+                                    <td class="p-3 border-r border-slate-300">Beruang hitam, Serigala, Moose</td>
+                                    <td class="p-3">Daun berbentuk jarum berlapis lilin agar tahan salju.</td>
+                                </tr>
+                                <tr class="bg-sky-50">
+                                    <td class="p-3 font-black text-sky-900 border-r border-slate-300">Tundra</td>
+                                    <td class="p-3 border-r border-slate-300">&lt;250 mm</td>
+                                    <td class="p-3 border-r border-slate-300">Lumut Sphagnum, Lichen</td>
+                                    <td class="p-3 border-r border-slate-300">Beruang kutub, Rusa kutub, Penguin</td>
+                                    <td class="p-3">Bulu sangat tebal dan lapisan lemak bawah kulit (blubber).</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FORM EVALUASI & PENILAIAN (TOTAL 100 POIN) -->
+        <form id="modulForm" onsubmit="event.preventDefault();" class="space-y-12">
+            
+            <!-- IV. LKPD 2.2 (3 Soal = Maks 10 Poin) -->
+            <section id="lkpd" class="bg-gradient-to-br from-teal-950 via-slate-900 to-indigo-950 p-6 sm:p-10 rounded-3xl border-8 border-teal-400 shadow-2xl text-white space-y-6">
+                <div class="flex items-center justify-between flex-wrap gap-4 border-b-4 border-teal-400 pb-4">
+                    <div class="flex items-center gap-4">
+                        <div class="w-14 h-14 rounded-2xl bg-teal-400 text-black flex items-center justify-center text-3xl font-black shadow-lg">
+                            <i class="fa-solid fa-clipboard-question fa-spin"></i>
+                        </div>
+                        <div>
+                            <span class="text-xs uppercase tracking-widest font-black text-teal-300">Bagian IV: LKPD 2.2 (Bobot: 10 Poin)</span>
+                            <h3 class="text-2xl sm:text-4xl font-black">ANALISIS ADAPTASI BIOMA TERESTRIAL</h3>
+                        </div>
+                    </div>
+                    <span class="bg-teal-400 text-black font-black px-4 py-2 rounded-xl text-xs sm:text-sm shadow-md">
+                        3 Soal = Maks 10 Poin
+                    </span>
+                </div>
+
+                <div class="space-y-6">
+                    <div class="bg-slate-900/90 p-6 rounded-2xl border-2 border-teal-500 space-y-3">
+                        <label class="block font-black text-base sm:text-lg text-cyan-300">
+                            1. Identifikasi Grafik (3 Poin): Berdasarkan grafik hubungan suhu dan curah hujan di atas, jelaskan mengapa wilayah bersuhu tinggi (&gt;25°C) dapat berubah menjadi Hutan Hujan Tropis di satu tempat tetapi menjadi Gurun di tempat lain!
+                        </label>
+                        <textarea id="lkpd1" rows="3" placeholder="Ketik jawaban analisis grafik Anda di sini..." class="w-full p-4 rounded-xl bg-slate-950 border border-teal-500 text-white font-semibold text-sm focus:outline-none focus:ring-4 focus:ring-teal-400"></textarea>
+                    </div>
+
+                    <div class="bg-slate-900/90 p-6 rounded-2xl border-2 border-teal-500 space-y-3">
+                        <label class="block font-black text-base sm:text-lg text-orange-300">
+                            2. Analisis Morfologi Flora (3 Poin): Bandingkan bentuk daun tanaman di bioma Taiga, Gurun, dan Hutan Hujan Tropis, lalu jelaskan fungsi bentuk daun tersebut terhadap ketersediaan air!
+                        </label>
+                        <textarea id="lkpd2" rows="3" placeholder="Ketik perbandingan bentuk daun ketiga bioma di sini..." class="w-full p-4 rounded-xl bg-slate-950 border border-teal-500 text-white font-semibold text-sm focus:outline-none focus:ring-4 focus:ring-teal-400"></textarea>
+                    </div>
+
+                    <div class="bg-slate-900/90 p-6 rounded-2xl border-2 border-teal-500 space-y-3">
+                        <label class="block font-black text-base sm:text-lg text-lime-300">
+                            3. Pemetaan Indonesia (4 Poin): Di Indonesia terdapat formasi hutan hujan tropis (Kalimantan), hutan musim/gugur (Jawa Timur), dan sabana (Nusa Tenggara Timur). Mengapa di Indonesia tidak ditemukan bioma Taiga dan Tundra? (Kecuali salju abadi Puncak Jaya).
+                        </label>
+                        <textarea id="lkpd3" rows="3" placeholder="Ketik analisis pemetaan bioma Indonesia di sini..." class="w-full p-4 rounded-xl bg-slate-950 border border-teal-500 text-white font-semibold text-sm focus:outline-none focus:ring-4 focus:ring-teal-400"></textarea>
+                    </div>
+                </div>
+            </section>
+
+            <!-- V. PILIHAN GANDA (20 Soal = Maks 50 Poin) -->
+            <section id="pg" class="bg-custom-blue p-6 sm:p-10 rounded-3xl border-8 border-custom-yellow shadow-2xl text-white">
+                <div class="flex items-center justify-between flex-wrap gap-4 mb-6 border-b-4 border-custom-yellow pb-4">
+                    <div class="flex items-center gap-4">
+                        <div class="w-14 h-14 rounded-2xl bg-custom-yellow text-black flex items-center justify-center text-3xl font-black shadow-lg">
+                            <i class="fa-solid fa-list-check fa-bounce"></i>
+                        </div>
+                        <div>
+                            <span class="text-xs uppercase tracking-widest font-black text-yellow-300">Bagian A (Bobot: 50 Poin)</span>
+                            <h3 class="text-2xl sm:text-4xl font-black">20 SOAL PILIHAN GANDA</h3>
+                        </div>
+                    </div>
+                    <span class="bg-white text-blue-900 font-black px-4 py-2 rounded-xl text-xs sm:text-sm border-2 border-yellow-400">
+                        2,5 Poin / Soal
+                    </span>
+                </div>
+                <div id="pg-container" class="space-y-6"></div>
+            </section>
+
+            <!-- VI. MENJODOHKAN (5 Soal = Maks 10 Poin) -->
+            <section id="jodoh" class="bg-custom-yellow p-6 sm:p-10 rounded-3xl border-8 border-custom-orange shadow-2xl text-black">
+                <div class="flex items-center justify-between flex-wrap gap-4 mb-6 border-b-4 border-black pb-4">
+                    <div class="flex items-center gap-4">
+                        <div class="w-14 h-14 rounded-2xl bg-black text-custom-yellow flex items-center justify-center text-3xl font-black shadow-lg">
+                            <i class="fa-solid fa-puzzle-piece fa-spin"></i>
+                        </div>
+                        <div>
+                            <span class="text-xs uppercase tracking-widest font-black text-orange-800">Bagian B (Bobot: 10 Poin)</span>
+                            <h3 class="text-2xl sm:text-4xl font-black">5 SOAL MENJODOHKAN</h3>
+                        </div>
+                    </div>
+                    <span class="bg-black text-custom-yellow font-black px-4 py-2 rounded-xl text-xs sm:text-sm border-2 border-white">
+                        2 Poin / Soal
+                    </span>
+                </div>
+                <div class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-center bg-white p-5 rounded-2xl border-4 border-custom-orange shadow-md">
+                        <div class="font-extrabold text-sm sm:text-base">1. Pohon menggugurkan daun secara serentak di musim gugur.</div>
+                        <select id="jodoh1" class="p-3 bg-amber-50 border-4 border-custom-blue rounded-xl font-black text-sm focus:outline-none">
+                            <option value="">-- Pilih Pasangan Bioma --</option>
+                            <option value="A">A. Bioma Gurun</option>
+                            <option value="B">B. Bioma Hutan Hujan Tropis</option>
+                            <option value="C">C. Bioma Sabana</option>
+                            <option value="D">D. Bioma Hutan Gugur</option>
+                            <option value="E">E. Bioma Tundra</option>
+                        </select>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-center bg-white p-5 rounded-2xl border-4 border-custom-orange shadow-md">
+                        <div class="font-extrabold text-sm sm:text-base">2. Didominasi tumbuhan xerofit berdaun duri dan hewan unta berpunuk.</div>
+                        <select id="jodoh2" class="p-3 bg-amber-50 border-4 border-custom-blue rounded-xl font-black text-sm focus:outline-none">
+                            <option value="">-- Pilih Pasangan Bioma --</option>
+                            <option value="A">A. Bioma Gurun</option>
+                            <option value="B">B. Bioma Hutan Hujan Tropis</option>
+                            <option value="C">C. Bioma Sabana</option>
+                            <option value="D">D. Bioma Hutan Gugur</option>
+                            <option value="E">E. Bioma Tundra</option>
+                        </select>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-center bg-white p-5 rounded-2xl border-4 border-custom-orange shadow-md">
+                        <div class="font-extrabold text-sm sm:text-base">3. Tanah membeku secara permanen (permafrost), hanya ditumbuhi lumut dan lichen.</div>
+                        <select id="jodoh3" class="p-3 bg-amber-50 border-4 border-custom-blue rounded-xl font-black text-sm focus:outline-none">
+                            <option value="">-- Pilih Pasangan Bioma --</option>
+                            <option value="A">A. Bioma Gurun</option>
+                            <option value="B">B. Bioma Hutan Hujan Tropis</option>
+                            <option value="C">C. Bioma Sabana</option>
+                            <option value="D">D. Bioma Hutan Gugur</option>
+                            <option value="E">E. Bioma Tundra</option>
+                        </select>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-center bg-white p-5 rounded-2xl border-4 border-custom-orange shadow-md">
+                        <div class="font-extrabold text-sm sm:text-base">4. Pohon tinggi berdaun lebar membentuk kanopi lebat, banyak liana dan epifit.</div>
+                        <select id="jodoh4" class="p-3 bg-amber-50 border-4 border-custom-blue rounded-xl font-black text-sm focus:outline-none">
+                            <option value="">-- Pilih Pasangan Bioma --</option>
+                            <option value="A">A. Bioma Gurun</option>
+                            <option value="B">B. Bioma Hutan Hujan Tropis</option>
+                            <option value="C">C. Bioma Sabana</option>
+                            <option value="D">D. Bioma Hutan Gugur</option>
+                            <option value="E">E. Bioma Tundra</option>
+                        </select>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-center bg-white p-5 rounded-2xl border-4 border-custom-orange shadow-md">
+                        <div class="font-extrabold text-sm sm:text-base">5. Padang rumput luas yang diselingi pepohonan akasia atau lontar secara menyebar.</div>
+                        <select id="jodoh5" class="p-3 bg-amber-50 border-4 border-custom-blue rounded-xl font-black text-sm focus:outline-none">
+                            <option value="">-- Pilih Pasangan Bioma --</option>
+                            <option value="A">A. Bioma Gurun</option>
+                            <option value="B">B. Bioma Hutan Hujan Tropis</option>
+                            <option value="C">C. Bioma Sabana</option>
+                            <option value="D">D. Bioma Hutan Gugur</option>
+                            <option value="E">E. Bioma Tundra</option>
+                        </select>
+                    </div>
+                </div>
+            </section>
+
+            <!-- VII. SOAL ESAI AI (5 Soal = Maks 30 Poin) -->
+            <section id="esai" class="bg-custom-lime p-6 sm:p-10 rounded-3xl border-8 border-custom-darkgreen shadow-2xl text-black">
+                <div class="flex items-center justify-between flex-wrap gap-4 mb-6 border-b-4 border-black pb-4">
+                    <div class="flex items-center gap-4">
+                        <div class="w-14 h-14 rounded-2xl bg-black text-custom-lime flex items-center justify-center text-3xl font-black shadow-lg">
+                            <i class="fa-solid fa-pen-fancy fa-shake"></i>
+                        </div>
+                        <div>
+                            <span class="text-xs uppercase tracking-widest font-black text-emerald-900">Bagian C (Bobot: 30 Poin)</span>
+                            <h3 class="text-2xl sm:text-4xl font-black">5 SOAL ESAI (KOREKSI AI)</h3>
+                        </div>
+                    </div>
+                    <span class="bg-black text-custom-lime font-black px-4 py-2 rounded-xl text-xs sm:text-sm border-2 border-white">
+                        6 Poin / Soal
+                    </span>
+                </div>
+                <div class="space-y-6">
+                    <div class="bg-white p-5 rounded-2xl border-4 border-custom-darkgreen shadow-lg">
+                        <label class="block font-black text-sm sm:text-base mb-2">1. Jelaskan perbedaan curah hujan dan vegetasi antara bioma Sabana dan Stepa!</label>
+                        <textarea id="esai1" rows="3" placeholder="Ketik jawaban lengkap Anda di sini..." class="w-full p-4 bg-emerald-50 border-2 border-emerald-400 rounded-xl font-bold text-sm focus:outline-none"></textarea>
+                    </div>
+                    <div class="bg-white p-5 rounded-2xl border-4 border-custom-darkgreen shadow-lg">
+                        <label class="block font-black text-sm sm:text-base mb-2">2. Mengapa pohon di Hutan Hujan Tropis memiliki daun yang lebar dan tipis?</label>
+                        <textarea id="esai2" rows="3" placeholder="Ketik jawaban lengkap Anda di sini..." class="w-full p-4 bg-emerald-50 border-2 border-emerald-400 rounded-xl font-bold text-sm focus:outline-none"></textarea>
+                    </div>
+                    <div class="bg-white p-5 rounded-2xl border-4 border-custom-darkgreen shadow-lg">
+                        <label class="block font-black text-sm sm:text-base mb-2">3. Uraikan bentuk adaptasi morfologi tanaman kaktus di bioma Gurun!</label>
+                        <textarea id="esai3" rows="3" placeholder="Ketik jawaban lengkap Anda di sini..." class="w-full p-4 bg-emerald-50 border-2 border-emerald-400 rounded-xl font-bold text-sm focus:outline-none"></textarea>
+                    </div>
+                    <div class="bg-white p-5 rounded-2xl border-4 border-custom-darkgreen shadow-lg">
+                        <label class="block font-black text-sm sm:text-base mb-2">4. Jelaskan apa itu hibernasi pada fauna dan di bioma mana perilaku ini paling banyak ditemukan!</label>
+                        <textarea id="esai4" rows="3" placeholder="Ketik jawaban lengkap Anda di sini..." class="w-full p-4 bg-emerald-50 border-2 border-emerald-400 rounded-xl font-bold text-sm focus:outline-none"></textarea>
+                    </div>
+                    <div class="bg-white p-5 rounded-2xl border-4 border-custom-darkgreen shadow-lg">
+                        <label class="block font-black text-sm sm:text-base mb-2">5. Mengapa ketersediaan curah hujan tahunan sangat menentukan tinggi rendahnya pepohonan di suatu bioma?</label>
+                        <textarea id="esai5" rows="3" placeholder="Ketik jawaban lengkap Anda di sini..." class="w-full p-4 bg-emerald-50 border-2 border-emerald-400 rounded-xl font-bold text-sm focus:outline-none"></textarea>
+                    </div>
+                </div>
+            </section>
+
+            <!-- VIII. KALKULASI SKOR & TABEL REKAP NILAI SELURUH SISWA DARI GOOGLE SHEET -->
+            <section id="skor" class="bg-gradient-to-r from-orange-500 via-red-600 to-rose-600 p-6 sm:p-10 rounded-3xl border-8 border-custom-yellow shadow-2xl text-white space-y-10">
+                <div class="text-center">
+                    <div class="w-20 h-20 mx-auto rounded-3xl bg-custom-yellow text-black flex items-center justify-center text-4xl font-black shadow-2xl mb-6">
+                        <i class="fa-solid fa-calculator fa-beat"></i>
+                    </div>
+                    <h3 class="text-3xl sm:text-5xl font-black mb-3">HITUNG & SIMPAN NILAI</h3>
+                    <p class="text-yellow-200 font-extrabold text-sm sm:text-base max-w-2xl mx-auto mb-6">
+                        Sistem mengakumulasikan nilai otomatis: LKPD (10) + Pilihan Ganda (50) + Menjodohkan (10) + Esai AI (30) = Total 100 Poin, lalu menyimpannya langsung ke Google Sheet Guru.
+                    </p>
+
+                    <div id="hasilSkorBox" class="hidden max-w-md mx-auto bg-black/80 p-6 rounded-2xl border-4 border-custom-yellow mb-8 shadow-2xl">
+                        <h4 id="statusProses" class="text-yellow-300 font-black text-xl mb-4 text-center"></h4>
+                        <div id="rincianNilai" class="hidden text-left space-y-2">
+                            <p class="text-lg font-bold">Skor LKPD (3 Soal): <span id="skorLKPDText" class="text-teal-300 font-black">0</span> / 10</p>
+                            <p class="text-lg font-bold">Skor Pilihan Ganda: <span id="skorPGText" class="text-cyan-300 font-black">0</span> / 50</p>
+                            <p class="text-lg font-bold">Skor Menjodohkan: <span id="skorJodohText" class="text-custom-lime font-black">0</span> / 10</p>
+                            <p class="text-lg font-bold">Skor Esai (Koreksi AI): <span id="skorEsaiText" class="text-orange-300 font-black">0</span> / 30</p>
+                            <p class="text-xl font-black mt-4 pt-4 border-t-2 border-white/50 text-center">
+                                NILAI AKHIR: <span id="skorTotalText" class="text-yellow-300 text-4xl font-black block mt-2">0</span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- TOMBOL TUNGGAL (TANPA TOMBOL KIRIM NILAI KE WA GURU) -->
+                    <div class="flex justify-center">
+                        <button id="btnHitung" type="button" onclick="prosesPenilaianOtomatis()" class="px-8 py-5 rounded-2xl bg-custom-yellow hover:bg-yellow-300 text-black font-black text-lg shadow-xl hover:scale-105 transition-all">
+                            <i class="fa-solid fa-microchip me-2"></i> Periksa Jawaban & Simpan ke Google Sheet
+                        </button>
+                    </div>
+                </div>
+
+                <!-- PANEL REKAPITULASI NILAI SISWA DARI GOOGLE SHEET -->
+                <div class="bg-slate-950/95 p-6 sm:p-8 rounded-3xl border-4 border-custom-yellow shadow-2xl space-y-6 text-left">
+                    <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 border-b-2 border-slate-700 pb-4">
+                        <div>
+                            <span class="bg-custom-lime text-black font-black text-xs uppercase px-3 py-1 rounded-full">
+                                <i class="fa-solid fa-database me-1"></i> Live Database Google Sheet
+                            </span>
+                            <h4 class="text-2xl sm:text-3xl font-black text-yellow-300 mt-2">
+                                DAFTAR NILAI SKOR SISWA YANG SUDAH MASUK
+                            </h4>
+                        </div>
+                        <div class="flex flex-wrap gap-3">
+                            <button type="button" onclick="muatDataSkorDariSheet()" class="px-4 py-3 rounded-xl bg-cyan-400 hover:bg-cyan-300 text-black font-black text-xs sm:text-sm flex items-center gap-2 shadow-lg transition-all">
+                                <i id="iconRefresh" class="fa-solid fa-rotate"></i> Muat Ulang Data
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Ringkasan Statistik Kelas -->
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                        <div class="bg-slate-900 p-4 rounded-2xl border-2 border-cyan-500 text-center">
+                            <span class="text-xs font-bold text-slate-400 uppercase">Total Siswa Masuk</span>
+                            <p id="statTotalSiswa" class="text-2xl sm:text-3xl font-black text-cyan-300 mt-1">0</p>
+                        </div>
+                        <div class="bg-slate-900 p-4 rounded-2xl border-2 border-yellow-400 text-center">
+                            <span class="text-xs font-bold text-slate-400 uppercase">Rata-Rata Nilai</span>
+                            <p id="statRataRata" class="text-2xl sm:text-3xl font-black text-yellow-300 mt-1">0</p>
+                        </div>
+                        <div class="bg-slate-900 p-4 rounded-2xl border-2 border-lime-400 text-center">
+                            <span class="text-xs font-bold text-slate-400 uppercase">Tuntas (&ge;75)</span>
+                            <p id="statTuntas" class="text-2xl sm:text-3xl font-black text-lime-400 mt-1">0</p>
+                        </div>
+                        <div class="bg-slate-900 p-4 rounded-2xl border-2 border-rose-500 text-center">
+                            <span class="text-xs font-bold text-slate-400 uppercase">Remedial (&lt;75)</span>
+                            <p id="statRemedial" class="text-2xl sm:text-3xl font-black text-rose-400 mt-1">0</p>
+                        </div>
+                    </div>
+
+                    <!-- Kotak Pencarian Nama / Kelas -->
+                    <div class="flex flex-col sm:flex-row gap-3">
+                        <input type="text" id="cariSiswaInput" oninput="filterTabelSkor()" placeholder="Cari nama siswa atau kelas..." class="w-full p-3.5 rounded-xl bg-slate-900 border-2 border-slate-600 text-white font-bold text-sm focus:outline-none focus:border-custom-yellow">
+                    </div>
+
+                    <!-- Status Pemuatan Tabel -->
+                    <div id="statusTabelSkor" class="text-center py-4 text-yellow-300 font-bold text-sm">
+                        Memuat data nilai siswa dari Google Sheet...
+                    </div>
+
+                    <!-- Tabel Daftar Nilai Siswa -->
+                    <div class="overflow-x-auto rounded-2xl border-2 border-slate-700 shadow-inner">
+                        <table class="w-full text-left border-collapse text-xs sm:text-sm">
+                            <thead>
+                                <tr class="bg-gradient-to-r from-purple-900 via-indigo-900 to-blue-900 text-custom-yellow font-black border-b-2 border-custom-yellow">
+                                    <th class="p-3 border-r border-slate-700 text-center">No</th>
+                                    <th class="p-3 border-r border-slate-700 text-center">No. Absen</th>
+                                    <th class="p-3 border-r border-slate-700">Nama Siswa</th>
+                                    <th class="p-3 border-r border-slate-700 text-center">Kelas</th>
+                                    <th class="p-3 border-r border-slate-700 text-center">LKPD (10)</th>
+                                    <th class="p-3 border-r border-slate-700 text-center">PG (50)</th>
+                                    <th class="p-3 border-r border-slate-700 text-center">Jodoh (10)</th>
+                                    <th class="p-3 border-r border-slate-700 text-center">Esai (30)</th>
+                                    <th class="p-3 border-r border-slate-700 text-center">Nilai Akhir</th>
+                                    <th class="p-3 text-center">Keterangan</th>
+                                </tr>
+                            </thead>
+                            <tbody id="bodyTabelSkor" class="divide-y divide-slate-800 bg-slate-900/90 font-bold text-slate-100">
+                                <!-- Baris nilai siswa dirender otomatis oleh JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </form>
+
+        <!-- IX. REFLEKSI SISWA -->
+        <section id="refleksi" class="bg-custom-purple p-6 sm:p-10 rounded-3xl border-8 border-custom-yellow shadow-2xl text-white">
+            <div class="flex items-center gap-4 mb-6 border-b-4 border-custom-yellow pb-4">
+                <div class="w-14 h-14 rounded-2xl bg-custom-yellow text-black flex items-center justify-center text-3xl font-black shadow-lg">
+                    <i class="fa-solid fa-heart fa-beat text-custom-red"></i>
+                </div>
+                <div>
+                    <span class="text-xs uppercase tracking-widest font-black text-yellow-300">Bagian IX</span>
+                    <h3 class="text-2xl sm:text-4xl font-black">REFLEKSI PESERTA DIDIK</h3>
+                </div>
+            </div>
+
+            <div class="space-y-4 mb-8">
+                <div class="bg-purple-900/60 p-5 rounded-2xl border-2 border-fuchsia-400">
+                    <label class="block font-black text-sm sm:text-base text-yellow-300 mb-2">
+                        1. Bioma manakah yang karakteristik dan cara adaptasi makhluk hidupnya paling menarik perhatian saya hari ini?
+                    </label>
+                    <textarea id="ref1" rows="2" placeholder="Tuliskan refleksi Anda..." class="w-full p-4 rounded-xl bg-purple-950 border border-fuchsia-400 font-bold text-white text-sm focus:outline-none"></textarea>
+                </div>
+                <div class="bg-purple-900/60 p-5 rounded-2xl border-2 border-fuchsia-400">
+                    <label class="block font-black text-sm sm:text-base text-yellow-300 mb-2">
+                        2. Apakah saya sudah dapat menjelaskan perbedaan mendasar antara Sabana dan Stepa tanpa melihat catatan?
+                    </label>
+                    <textarea id="ref2" rows="2" placeholder="Tuliskan pemahaman Anda..." class="w-full p-4 rounded-xl bg-purple-950 border border-fuchsia-400 font-bold text-white text-sm focus:outline-none"></textarea>
+                </div>
+            </div>
+
+            <div class="text-center">
+                <button type="button" onclick="kirimRefleksiKeWA()" class="px-10 py-5 rounded-2xl bg-custom-lime hover:bg-lime-400 text-black font-black text-xl shadow-2xl hover:scale-105 transition-all border-4 border-white">
+                    <i class="fa-brands fa-whatsapp text-3xl me-2"></i> Kirim Refleksi Siswa ke WA Guru
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-black py-8 border-t-4 border-custom-yellow text-center text-slate-400 text-xs sm:text-sm">
+        <p class="font-bold text-slate-300">Modul Pembelajaran Interaktif Kelas XI (Fase F) • Kurikulum Pembelajaran Mendalam</p>
+        <p class="mt-1">Developed by Ir. Budhy Prasetyo</p>
+    </footer>
+
+    <!-- JAVASCRIPT LOGIKA, AI KOREKSI, DAN SINKRONISASI TABEL GOOGLE SHEET -->
+    <script>
+        // =========================================================================
+        // KREDENSIAL API DAN URL WEBHOOK GOOGLE SCRIPT
+        // =========================================================================
+        const URL_GOOGLE_SCRIPT = "https://script.google.com/macros/s/AKfycbwDG1wx7GSU-cqQx_KJZWHy1tZTevSPv_IN9TEU3QELu7T6v6hqFWI31YcIGqouCJi7/exec"; 
+        const API_KEY_GEMINI = "AIzaSyANlsZCefeR4DMx5VorkMzHPlXQpdR7QW0zz";
+        // =========================================================================
+
+        let semuaDataNilai = [];
+
+        const dataPG = [
+            { q: "Bioma yang berlokasi di sekitar khatulistiwa dengan curah hujan lebih dari 2.000 mm/tahun adalah...", options: ["Stepa", "Taiga", "Hutan Gugur", "Hutan Hujan Tropis", "Sabana"], key: 3 },
+            { q: "Ciri utama dari bioma sabana yang membedakannya dengan stepa adalah...", options: ["Berada di kutub", "Terdapat pepohonan yang menyebar di antara rumput", "Hanya ditumbuhi lumut", "Hujan turun sepanjang tahun", "Didominasi tumbuhan kaktus"], key: 1 },
+            { q: "Bioma stepa tidak memiliki pepohonan berkayu besar karena...", options: ["Suhu terlalu dingin di bawah nol derajat", "Lapisan permafrost menghalangi akar", "Curah hujan rendah hanya 250-500 mm/tahun", "Sinar matahari tidak pernah bersinar", "Tergenang air laut sepanjang waktu"], key: 2 },
+            { q: "Tanaman kaktus di gurun memodifikasi daunnya menjadi duri tajam yang berfungsi utama untuk...", options: ["Menyerap embun malam", "Melindungi akar dari suhu dingin", "Mengurangi penguapan air yang ekstrem", "Menarik perhatian serangga penyerbuk", "Menyimpan makanan cadangan"], key: 2 },
+            { q: "Hutan yang pepohonannya menggugurkan daun secara serempak saat musim gugur tiba adalah...", options: ["Tundra", "Hutan Hujan Tropis", "Hutan Gugur (Deciduous)", "Sabana", "Taiga"], key: 2 },
+            { q: "Pohon pinus dan cemara berdaun jarum (konifer) dengan lapisan lilin merupakan ciri khas vegetasi bioma...", options: ["Taiga", "Gurun", "Stepa", "Tundra", "Sabana"], key: 0 },
+            { q: "Tanah yang membeku secara permanen (permafrost) hanya ditemukan di bioma...", options: ["Hutan Gugur", "Taiga", "Tundra", "Sabana", "Hutan Hujan Tropis"], key: 2 },
+            { q: "Satwa endemik hutan hujan tropis, seperti orangutan, memiliki ciri morfologi berupa lengan yang sangat panjang untuk...", options: ["Berlari cepat di padang rumput", "Berayun dan berpindah di antara kanopi pohon tinggi", "Menggali lubang di tanah berpasir", "Berenang melintasi sungai berarus deras", "Menahan hawa dingin ekstrem"], key: 1 },
+            { q: "Fauna khas yang umum ditemukan mencari makan berkoloni di bioma Sabana Afrika adalah...", options: ["Kasuari dan kanguru", "Beruang kutub dan penguin", "Singa, jerapah, dan zebra", "Bison dan kalkun liar", "Orangutan dan badak bercula satu"], key: 2 },
+            { q: "Satwa bison dan kanguru berevolusi memiliki tungkai kaki yang sangat kuat karena mereka hidup di bioma terbuka berupa...", options: ["Hutan Kanopi", "Tundra", "Gurun", "Stepa", "Taiga"], key: 3 },
+            { q: "Perilaku tidur panjang berbulan-bulan selama musim dingin untuk menghemat energi (hibernasi) dilakukan oleh beruang coklat di bioma...", options: ["Hutan Gugur", "Stepa", "Sabana", "Gurun", "Hutan Hujan Tropis"], key: 0 },
+            { q: "Beruang kutub mampu hidup di suhu ekstrem di bawah nol derajat karena memiliki...", options: ["Punuk penyimpan air", "Bulu tipis", "Sayap lebar", "Lapisan lemak tebal (blubber) di bawah kulit", "Duri pelindung"], key: 3 },
+            { q: "Vegetasi perintis yang mendominasi kawasan beku tundra adalah...", options: ["Pohon meranti", "Kaktus dan kurma", "Lumut kerak (lichens)", "Rumput gajah", "Pohon jati"], key: 2 },
+            { q: "Tumbuhan yang hidup menempel pada pohon tinggi tanpa merugikan inangnya (epifit) paling banyak ditemukan di...", options: ["Gurun", "Hutan Hujan Tropis", "Tundra", "Stepa", "Taiga"], key: 1 },
+            { q: "Bioma Gurun ditandai dengan tingkat curah hujan tahunan sebesar...", options: ["Lebih dari 3.000 mm", "1.500 - 2.000 mm", "750 - 1.000 mm", "500 - 750 mm", "Kurang dari 250 mm"], key: 4 },
+            { q: "Hutan jati di wilayah Jawa Timur menggugurkan daunnya pada musim kemarau sebagai bentuk adaptasi...", options: ["Hutan Gugur / Hutan Musim", "Taiga Tropis", "Hutan Hujan Abadi", "Tundra Pegunungan", "Gurun Pasir"], key: 0 },
+            { q: "Daun pada tumbuhan di hutan hujan tropis umumnya berbentuk lebar dan tipis untuk...", options: ["Menyimpan cadangan air", "Mempercepat penguapan karena tingginya kelembapan udara", "Memantulkan sinar matahari", "Mencegah dimakan ulat", "Berhibernasi"], key: 1 },
+            { q: "Padang rumput murni yang luas tanpa diselingi pepohonan besar sama sekali disebut...", options: ["Sabana", "Tundra", "Taiga", "Stepa", "Gurun"], key: 3 },
+            { q: "Karena kemampuan adaptasinya bertahan di habitat sangat kering dan menyimpan air di batang, kaktus tergolong tumbuhan...", options: ["Higrofit", "Hidrofit", "Halofit", "Xerofit", "Tropofit"], key: 3 },
+            { q: "Fauna khas seperti moose (rusa besar kutub utara) dan serigala hidup di antara pepohonan konifer pada bioma...", options: ["Hutan Gugur", "Taiga", "Sabana", "Stepa", "Tundra"], key: 1 }
+        ];
+
+        const kunciJodoh = ["D", "A", "E", "B", "C"];
+
+        // Render 20 Soal PG
+        const pgContainer = document.getElementById('pg-container');
+        let pgHtml = '';
+        dataPG.forEach((item, index) => {
+            pgHtml += `
+            <div class="bg-blue-950/80 p-5 rounded-2xl border-2 border-cyan-400 shadow-md">
+                <p class="font-extrabold text-sm sm:text-base text-yellow-300 mb-3">
+                    <span class="px-2 py-1 bg-custom-yellow text-black rounded-lg text-xs mr-2">${index + 1}</span>${item.q}
+                </p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">
+            `;
+            const letters = ['A', 'B', 'C', 'D', 'E'];
+            item.options.forEach((opt, optIndex) => {
+                pgHtml += `
+                    <label class="flex items-center space-x-3 p-3 bg-blue-900/60 hover:bg-custom-yellow hover:text-black rounded-xl cursor-pointer transition font-bold text-xs sm:text-sm border border-cyan-800">
+                        <input type="radio" name="soal_pg_${index}" value="${optIndex}" class="w-4 h-4 accent-custom-yellow">
+                        <span><strong>${letters[optIndex]}.</strong> ${opt}</span>
+                    </label>
+                `;
+            });
+            pgHtml += `</div></div>`;
+        });
+        pgContainer.innerHTML = pgHtml;
+
+        function toggleAccordion(id, icon) {
+            const el = document.getElementById(id);
+            const ic = document.getElementById(icon);
+            el.classList.toggle('hidden');
+            ic.style.transform = el.classList.contains('hidden') ? 'rotate(0deg)' : 'rotate(180deg)';
+        }
+
+        // Kalkulasi LKPD (10 Poin), PG (50 Poin), Menjodohkan (10 Poin)
+        function hitungSkorObjektif() {
+            let skorLKPD = 0;
+            if (document.getElementById('lkpd1').value.trim().length > 5) skorLKPD += 3;
+            if (document.getElementById('lkpd2').value.trim().length > 5) skorLKPD += 3;
+            if (document.getElementById('lkpd3').value.trim().length > 5) skorLKPD += 4;
+
+            let skorPG = 0;
+            dataPG.forEach((item, index) => {
+                const radios = document.getElementsByName(`soal_pg_${index}`);
+                for (let r of radios) {
+                    if (r.checked && parseInt(r.value) === item.key) skorPG += 2.5;
+                }
+            });
+
+            let skorJodoh = 0;
+            for (let i = 1; i <= 5; i++) {
+                if (document.getElementById(`jodoh${i}`).value === kunciJodoh[i - 1]) skorJodoh += 2;
+            }
+
+            return { skorLKPD, skorPG, skorJodoh };
+        }
+
+        // Koreksi Esai Otomatis AI Gemini (5 Soal x 6 = Maks 30 Poin)
+        async function koreksiEsaiDenganAI(jawaban) {
+            const hitungCadangan = () => {
+                let skor = 0;
+                jawaban.forEach(j => { if (j.length > 5) skor += 6; });
+                return skor;
+            };
+
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY_GEMINI}`;
+            const prompt = `Berikan HANYA SATU ANGKA TOTAL SKOR (0-30) untuk 5 jawaban esai ini. Jangan beri kalimat pengantar. Bobot maks 6 per soal.
+            Kunci:
+            1. Sabana hujan 900-1500mm ada pohon akasia menyebar, Stepa hujan 250-500mm hanya rumput (6)
+            2. Daun lebar tipis mempercepat penguapan/transpirasi di udara lembap (6)
+            3. Daun duri kurangi penguapan, batang tebal berlilin simpan air (6)
+            4. Hibernasi tidur musim dingin hemat energi di Hutan Gugur/Taiga (6)
+            5. Pohon tinggi butuh pasokan air tanah besar dari curah hujan tinggi (6)
+            
+            Jawaban Siswa:
+            1. ${jawaban[0]}
+            2. ${jawaban[1]}
+            3. ${jawaban[2]}
+            4. ${jawaban[3]}
+            5. ${jawaban[4]}`;
+
+            try {
+                const res = await fetch(url, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+                });
+                const data = await res.json();
+                if (!res.ok) return hitungCadangan();
+                let txt = data.candidates[0].content.parts[0].text;
+                let num = txt.match(/\d+/);
+                return num ? (parseInt(num[0]) > 30 ? 30 : parseInt(num[0])) : hitungCadangan();
+            } catch (e) {
+                return hitungCadangan();
+            }
+        }
+
+        // =========================================================================
+        // FUNGSI MEMUAT & MENAMPILKAN SELURUH NILAI SISWA DARI GOOGLE SHEET
+        // =========================================================================
+        function renderTabelSkor(daftar) {
+            const tbody = document.getElementById('bodyTabelSkor');
+            const statusBox = document.getElementById('statusTabelSkor');
+
+            const totalSiswa = daftar.length;
+            let totalNilai = 0;
+            let jmlTuntas = 0;
+            let jmlRemedial = 0;
+
+            daftar.forEach(item => {
+                const nilai = Number(item.skorTotal) || 0;
+                totalNilai += nilai;
+                if (nilai >= 75 || String(item.keterangan).toLowerCase() === 'tuntas') {
+                    jmlTuntas++;
+                } else {
+                    jmlRemedial++;
+                }
+            });
+
+            document.getElementById('statTotalSiswa').innerText = totalSiswa;
+            document.getElementById('statRataRata').innerText = totalSiswa > 0 ? (totalNilai / totalSiswa).toFixed(1) : "0";
+            document.getElementById('statTuntas').innerText = jmlTuntas;
+            document.getElementById('statRemedial').innerText = jmlRemedial;
+
+            if (daftar.length === 0) {
+                statusBox.classList.remove('hidden');
+                statusBox.innerHTML = "Belum ada data nilai siswa yang masuk atau cocok dengan pencarian.";
+                tbody.innerHTML = "";
+                return;
+            }
+
+            statusBox.classList.add('hidden');
+            let rowsHtml = '';
+            daftar.forEach((s, idx) => {
+                const nilaiAkhir = Number(s.skorTotal) || 0;
+                const isTuntas = nilaiAkhir >= 75 || String(s.keterangan).toLowerCase() === 'tuntas';
+                const badgeClass = isTuntas
+                    ? "bg-emerald-500/20 text-emerald-300 border border-emerald-400"
+                    : "bg-rose-500/20 text-rose-300 border border-rose-400";
+                const labelKet = isTuntas ? "Tuntas" : "Remedial";
+
+                rowsHtml += `
+                <tr class="hover:bg-indigo-950/70 transition-colors">
+                    <td class="p-3 border-r border-slate-800 text-center text-slate-400">${s.no || (idx + 1)}</td>
+                    <td class="p-3 border-r border-slate-800 text-center text-cyan-300">${s.absen || "-"}</td>
+                    <td class="p-3 border-r border-slate-800 font-extrabold text-white">${s.nama || "-"}</td>
+                    <td class="p-3 border-r border-slate-800 text-center text-yellow-200">${s.kelas || "-"}</td>
+                    <td class="p-3 border-r border-slate-800 text-center text-teal-300">${s.skorLKPD ?? 0}</td>
+                    <td class="p-3 border-r border-slate-800 text-center text-cyan-300">${s.skorPG ?? 0}</td>
+                    <td class="p-3 border-r border-slate-800 text-center text-lime-300">${s.skorJodoh ?? 0}</td>
+                    <td class="p-3 border-r border-slate-800 text-center text-orange-300">${s.skorEsai ?? 0}</td>
+                    <td class="p-3 border-r border-slate-800 text-center font-black text-lg text-custom-yellow">${nilaiAkhir}</td>
+                    <td class="p-3 text-center">
+                        <span class="px-3 py-1 rounded-full text-xs font-black ${badgeClass}">${labelKet}</span>
+                    </td>
+                </tr>`;
+            });
+            tbody.innerHTML = rowsHtml;
+        }
+
+        function filterTabelSkor() {
+            const keyword = document.getElementById('cariSiswaInput').value.toLowerCase().trim();
+            if (!keyword) {
+                renderTabelSkor(semuaDataNilai);
+                return;
+            }
+            const hasilFilter = semuaDataNilai.filter(item =>
+                String(item.nama).toLowerCase().includes(keyword) ||
+                String(item.kelas).toLowerCase().includes(keyword) ||
+                String(item.absen).toLowerCase().includes(keyword)
+            );
+            renderTabelSkor(hasilFilter);
+        }
+
+        async function muatDataSkorDariSheet() {
+            const iconRefresh = document.getElementById('iconRefresh');
+            const statusBox = document.getElementById('statusTabelSkor');
+            iconRefresh.classList.add('fa-spin');
+            statusBox.classList.remove('hidden');
+            statusBox.innerHTML = "<i class='fa-solid fa-spinner fa-spin me-2'></i> Mengambil data nilai terbaru dari Google Sheet...";
+
+            try {
+                const response = await fetch(`${URL_GOOGLE_SCRIPT}?action=read&_=${Date.now()}`);
+                const resJson = await response.json();
+                if (resJson && resJson.status === "sukses" && Array.isArray(resJson.data)) {
+                    semuaDataNilai = resJson.data;
+                    renderTabelSkor(semuaDataNilai);
+                } else {
+                    renderTabelSkor(semuaDataNilai);
+                }
+            } catch (error) {
+                renderTabelSkor(semuaDataNilai);
+            }
+            setTimeout(() => iconRefresh.classList.remove('fa-spin'), 800);
+        }
+
+        // Proses Penilaian & Simpan ke Google Sheet + Update Tabel Langsung
+        async function prosesPenilaianOtomatis() {
+            const nama = document.getElementById('namaSiswa').value.trim();
+            const kelas = document.getElementById('kelasSiswa').value.trim();
+            const absen = document.getElementById('absenSiswa').value.trim();
+
+            if (!nama || !kelas || !absen) {
+                alert("Harap lengkapi Identitas (Nama, Kelas, dan No. Absen) terlebih dahulu!");
+                document.getElementById('identitas').scrollIntoView({ behavior: 'smooth' });
+                return;
+            }
+
+            const btn = document.getElementById('btnHitung');
+            const kotakStatus = document.getElementById('hasilSkorBox');
+            const teksStatus = document.getElementById('statusProses');
+            const rincianBox = document.getElementById('rincianNilai');
+            
+            btn.disabled = true;
+            kotakStatus.classList.remove('hidden');
+            rincianBox.classList.add('hidden');
+            teksStatus.innerHTML = "<i class='fa-solid fa-spinner fa-spin text-4xl mb-2'></i><br>AI Sedang Memeriksa Jawaban Anda...";
+
+            const { skorLKPD, skorPG, skorJodoh } = hitungSkorObjektif();
+            const jawabanEsai = [];
+            for (let i = 1; i <= 5; i++) {
+                jawabanEsai.push(document.getElementById(`esai${i}`).value.trim() || "-");
+            }
+            
+            const skorEsai = await koreksiEsaiDenganAI(jawabanEsai);
+            const skorTotal = skorLKPD + skorPG + skorJodoh + skorEsai;
+
+            document.getElementById('skorLKPDText').innerText = skorLKPD;
+            document.getElementById('skorPGText').innerText = skorPG;
+            document.getElementById('skorJodohText').innerText = skorJodoh;
+            document.getElementById('skorEsaiText').innerText = skorEsai;
+            document.getElementById('skorTotalText').innerText = skorTotal;
+            
+            teksStatus.innerHTML = "PENILAIAN SELESAI!";
+            rincianBox.classList.remove('hidden');
+
+            // Tambahkan langsung ke tabel layar agar langsung terlihat seketika
+            semuaDataNilai.push({
+                no: semuaDataNilai.length + 1,
+                absen: absen,
+                nama: nama,
+                kelas: kelas,
+                skorLKPD: skorLKPD,
+                skorPG: skorPG,
+                skorJodoh: skorJodoh,
+                skorEsai: skorEsai,
+                skorTotal: skorTotal,
+                keterangan: skorTotal >= 75 ? "Tuntas" : "Remedial"
+            });
+            renderTabelSkor(semuaDataNilai);
+
+            const payload = {
+                namaSiswa: nama,
+                kelasSiswa: kelas,
+                absenSiswa: absen,
+                skorLKPD: skorLKPD,
+                skorKasus: skorLKPD,
+                skorPG: skorPG,
+                skorJodoh: skorJodoh,
+                skorEsai: skorEsai,
+                skorTotal: skorTotal
+            };
+
+            try {
+                teksStatus.innerHTML += "<br><span class='text-sm text-green-300 font-normal'>Menyimpan ke Google Sheets Guru...</span>";
+                await fetch(URL_GOOGLE_SCRIPT, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'text/plain' },
+                    body: JSON.stringify(payload)
+                });
+                teksStatus.innerHTML = "<i class='fa-solid fa-circle-check text-green-400 text-4xl mb-2'></i><br>NILAI BERHASIL DISIMPAN KE GOOGLE SHEET GURU!";
+                setTimeout(() => muatDataSkorDariSheet(), 2000);
+            } catch (err) {
+                teksStatus.innerHTML += "<br><span class='text-sm text-red-400 font-normal'>Gagal menyimpan ke Google Sheet. Periksa koneksi internet Anda.</span>";
+            }
+
+            btn.innerHTML = "<i class='fa-solid fa-check-to-slot me-2'></i> Coba Hitung Lagi";
+            btn.disabled = false;
+        }
+
+        function kirimRefleksiKeWA() {
+            const nama = document.getElementById('namaSiswa').value.trim();
+            const kelas = document.getElementById('kelasSiswa').value.trim();
+            const r1 = document.getElementById('ref1').value.trim() || "-";
+            const r2 = document.getElementById('ref2').value.trim() || "-";
+            if (!nama || !kelas) { alert("Lengkapi Identitas terlebih dahulu!"); return; }
+
+            let pesan = `*REFLEKSI SISWA TP 2.2 (BIOMA)*%0A*Nama:* ${nama}%0A*Kelas:* ${kelas}%0A--------------------%0A*1. Bioma paling menarik:* ${r1}%0A*2. Pemahaman Sabana vs Stepa:* ${r2}`;
+            window.open(`https://wa.me/6285167431907?text=${pesan}`, '_blank');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            muatDataSkorDariSheet();
+        });
+    </script>
+</body>
+</html>
