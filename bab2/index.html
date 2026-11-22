@@ -1,1 +1,1675 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biodiversity Explorer - Geografi Kelas XI</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <!-- SweetAlert2 untuk notifikasi yang elegan (Pengganti alert) -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        eco: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            800: '#166534',
+                            900: '#14532d',
+                        },
+                        ocean: {
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; overflow-x: hidden; }
+        .fade-in { animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Map Styles */
+        .map-region { fill: #dcfce7; stroke: #15803d; stroke-width: 2; transition: all 0.3s; cursor: pointer; }
+        .map-region:hover { fill: #22c55e; filter: drop-shadow(0 0 5px rgba(34,197,94,0.8)); transform: scale(1.02); }
+        .map-line { stroke: #ef4444; stroke-width: 3; stroke-dasharray: 5,5; fill: none; }
+        
+        .glass-panel { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #22c55e; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #16a34a; }
+    </style>
+</head>
+<body class="text-slate-800 flex flex-col min-h-screen">
 
+    <!-- Navigation -->
+    <nav class="bg-eco-800 text-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center cursor-pointer" onclick="navigate('home')">
+                    <i class="fa-solid fa-leaf text-2xl text-eco-500 mr-2"></i>
+                    <span class="font-bold text-xl tracking-wide">BIODIVERSITY <span class="text-eco-500">EXPLORER</span></span>
+                </div>
+                <div class="hidden md:flex items-center space-x-4">
+                    <button onclick="navigate('home')" class="hover:text-eco-500 px-3 py-2 rounded-md font-medium transition"><i class="fa-solid fa-house mr-1"></i> Beranda</button>
+                    <button onclick="navigate('dashboard')" class="hover:text-eco-500 px-3 py-2 rounded-md font-medium transition"><i class="fa-solid fa-book-open mr-1"></i> Modul</button>
+                    <button onclick="navigate('gallery')" class="hover:text-eco-500 px-3 py-2 rounded-md font-medium transition"><i class="fa-solid fa-images mr-1"></i> Galeri</button>
+                    <button onclick="navigate('simulation')" class="hover:text-eco-500 px-3 py-2 rounded-md font-medium transition"><i class="fa-solid fa-flask mr-1"></i> Simulasi</button>
+                    <button onclick="navigate('recap')" class="hover:text-yellow-400 px-3 py-2 rounded-md font-bold transition text-yellow-300"><i class="fa-solid fa-table-list mr-1"></i> Rekap Nilai</button>
+                    <div class="flex items-center bg-eco-900 px-3 py-1 rounded-full text-sm">
+                        <i class="fa-solid fa-star text-yellow-400 mr-1"></i> <span id="nav-score">0 Poin</span>
+                    </div>
+                </div>
+                <!-- Mobile menu button -->
+                <div class="flex items-center md:hidden">
+                    <button id="mobile-menu-btn" class="text-white hover:text-eco-500 focus:outline-none">
+                        <i class="fa-solid fa-bars text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-eco-700">
+            <a href="#" onclick="navigate('home')" class="block px-4 py-2 hover:bg-eco-600">Beranda</a>
+            <a href="#" onclick="navigate('dashboard')" class="block px-4 py-2 hover:bg-eco-600">Modul Belajar</a>
+            <a href="#" onclick="navigate('gallery')" class="block px-4 py-2 hover:bg-eco-600">Galeri</a>
+            <a href="#" onclick="navigate('simulation')" class="block px-4 py-2 hover:bg-eco-600">Simulasi</a>
+            <a href="#" onclick="navigate('recap')" class="block px-4 py-2 hover:bg-yellow-600 text-yellow-300 font-bold">Rekap Nilai</a>
+        </div>
+    </nav>
+
+    <!-- Main Content Container -->
+    <main id="app-container" class="flex-grow flex flex-col relative w-full"></main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-400 py-6 text-center text-sm">
+        <p>&copy; 2026 Biodiversity Explorer. Geografi Fase F - Kelas XI IPS. Pembelajaran Mendalam.</p>
+        <p class="mt-1">Pengembang: <strong>Ir. Budhy Prasetyo</strong> | Acuan CP: Kepka BSKAP No. 046/H/KR/2025</p>
+    </footer>
+
+    <!-- APLIKASI LENGKAP JAVASCRIPT -->
+    <script>
+        // Helper aman untuk penyimpanan lokal agar tidak error pada iframe sandbox
+        function safeGetStorage(key, fallback) {
+            try {
+                const val = localStorage.getItem(key);
+                return val !== null ? JSON.parse(val) : fallback;
+            } catch (e) {
+                return fallback;
+            }
+        }
+
+        function safeSetStorage(key, value) {
+            try {
+                localStorage.setItem(key, JSON.stringify(value));
+            } catch (e) {
+                console.warn("Penyimpanan lokal tidak tersedia:", e);
+            }
+        }
+
+        // Fallback jika SweetAlert2 gagal dimuat dari CDN
+        if (typeof window.Swal === 'undefined') {
+            window.Swal = {
+                fire: function(titleOrOpts, text) {
+                    const msg = typeof titleOrOpts === 'object'
+                        ? `${titleOrOpts.title || ''}: ${titleOrOpts.text || ''}`
+                        : `${titleOrOpts}: ${text || ''}`;
+                    console.log(msg);
+                    return Promise.resolve({});
+                }
+            };
+        }
+
+        // State Global & Database Cloud (dengan fallback lokal)
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'biodiv-explorer';
+        let firebaseConfig = null;
+        try {
+            if (typeof __firebase_config !== 'undefined' && __firebase_config) {
+                firebaseConfig = typeof __firebase_config === 'string'
+                    ? JSON.parse(__firebase_config)
+                    : __firebase_config;
+            }
+        } catch (e) {
+            console.warn("Konfigurasi Firebase tidak valid, menggunakan mode lokal:", e);
+        }
+
+        let db = null;
+        let auth = null;
+        let currentUser = null;
+        let firestoreMod = null;
+        window.allStudentsScores = safeGetStorage('biodiv_recap_scores', []);
+        window.isTeacherMode = false;
+
+        // Inisialisasi Firebase secara dinamis agar tidak memblokir fungsi navigasi utama
+        async function initFirebase() {
+            if (!firebaseConfig) return;
+            try {
+                const appMod = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js");
+                const authMod = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js");
+                firestoreMod = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js");
+
+                const app = appMod.initializeApp(firebaseConfig);
+                db = firestoreMod.getFirestore(app);
+                auth = authMod.getAuth(app);
+
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await authMod.signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await authMod.signInAnonymously(auth);
+                }
+                currentUser = auth.currentUser;
+                listenToScores();
+            } catch (e) {
+                console.warn("Mode offline/lokal aktif (Cloud tidak terhubung):", e);
+            }
+        }
+
+        function listenToScores() {
+            if (!currentUser || !db || !firestoreMod) return;
+            const scoresRef = firestoreMod.collection(db, 'artifacts', appId, 'public', 'data', 'student_scores');
+            firestoreMod.onSnapshot(scoresRef, (snapshot) => {
+                window.allStudentsScores = [];
+                snapshot.forEach((docSnap) => {
+                    window.allStudentsScores.push({ id: docSnap.id, ...docSnap.data() });
+                });
+                window.allStudentsScores.sort((a, b) => b.totalSkor - a.totalSkor);
+                safeSetStorage('biodiv_recap_scores', window.allStudentsScores);
+                if (window.currentScreen === 'recap') {
+                    window.renderRecapTable();
+                }
+            }, (error) => console.error("Sync error:", error));
+        }
+
+        window.submitToCloud = async function() {
+            const nameInput = document.getElementById('student-name-input');
+            const studentName = nameInput ? nameInput.value : '';
+            if (!studentName.trim()) {
+                Swal.fire('Oops', 'Mohon masukkan nama kamu terlebih dahulu!', 'warning');
+                return;
+            }
+
+            const totalPertanyaan = 65; // (9 modul x 5 soal) + 20 soal evaluasi
+            let totalBenar = state.evalScore || 0;
+            let detailModul = {};
+
+            for (let i = 1; i <= 9; i++) {
+                const s = state.moduleScores[i] || 0;
+                totalBenar += s;
+                detailModul[`M${i}`] = s;
+            }
+
+            const skor100 = Math.round((totalBenar / totalPertanyaan) * 100);
+            const recordId = currentUser ? currentUser.uid : ('local_' + studentName.trim().toLowerCase().replace(/\s+/g, '_'));
+
+            const scoreData = {
+                nama: studentName.trim(),
+                totalBenar: totalBenar,
+                totalSkor: skor100,
+                modul: detailModul,
+                evaluasi: state.evalScore || 0,
+                timestamp: new Date().toISOString()
+            };
+
+            // Jika Cloud aktif, kirim ke Firestore
+            if (currentUser && db && firestoreMod) {
+                try {
+                    const docRef = firestoreMod.doc(db, 'artifacts', appId, 'public', 'data', 'student_scores', recordId);
+                    await firestoreMod.setDoc(docRef, scoreData);
+                    Swal.fire('Terkirim!', 'Nilaimu berhasil disinkronkan ke Tabel Rekap Kelas.', 'success');
+                    return;
+                } catch (e) {
+                    console.error("Gagal kirim ke cloud, beralih ke penyimpanan lokal:", e);
+                }
+            }
+
+            // Fallback penyimpanan lokal jika cloud tidak terhubung
+            const existingIdx = window.allStudentsScores.findIndex(item => item.id === recordId);
+            if (existingIdx >= 0) {
+                window.allStudentsScores[existingIdx] = { id: recordId, ...scoreData };
+            } else {
+                window.allStudentsScores.push({ id: recordId, ...scoreData });
+            }
+            window.allStudentsScores.sort((a, b) => b.totalSkor - a.totalSkor);
+            safeSetStorage('biodiv_recap_scores', window.allStudentsScores);
+            window.renderRecapTable();
+            Swal.fire('Tersimpan!', 'Nilaimu berhasil disimpan ke Tabel Rekap Kelas.', 'success');
+        };
+
+        // Fungsi Mode Guru: Aktifkan / Nonaktifkan Edit
+        window.toggleTeacherMode = async function() {
+            if (!window.isTeacherMode) {
+                const { value: pin } = await Swal.fire({
+                    title: 'Akses Mode Guru',
+                    input: 'password',
+                    inputLabel: 'Masukkan PIN Guru (Default: 1234)',
+                    inputPlaceholder: 'Masukkan PIN...',
+                    showCancelButton: true,
+                    confirmButtonColor: '#16a34a'
+                });
+                if (pin === '1234') {
+                    window.isTeacherMode = true;
+                    Swal.fire('Berhasil', 'Mode Guru aktif! Anda dapat mengedit nilai langsung di tabel.', 'success');
+                    window.renderRecapTable();
+                } else if (pin !== undefined) {
+                    Swal.fire('Salah', 'PIN Guru tidak sesuai.', 'error');
+                }
+            } else {
+                window.isTeacherMode = false;
+                window.renderRecapTable();
+            }
+        };
+
+        // Fungsi Edit Nilai Siswa oleh Guru (Sinkron ke Cloud / Lokal)
+        window.editStudentScore = async function(studentId, studentName, currentScore) {
+            const { value: newScore, isDenied } = await Swal.fire({
+                title: `Edit Nilai: ${studentName}`,
+                input: 'number',
+                inputLabel: 'Masukkan Nilai Akhir Baru (0 - 100)',
+                inputValue: currentScore,
+                inputAttributes: { min: 0, max: 100, step: 1 },
+                showCancelButton: true,
+                showDenyButton: true,
+                confirmButtonText: 'Simpan Perubahan',
+                denyButtonText: 'Hapus Data',
+                confirmButtonColor: '#16a34a',
+                denyButtonColor: '#dc2626'
+            });
+
+            if (isDenied) {
+                if (db && firestoreMod) {
+                    try {
+                        const docRef = firestoreMod.doc(db, 'artifacts', appId, 'public', 'data', 'student_scores', studentId);
+                        await firestoreMod.deleteDoc(docRef);
+                        Swal.fire('Terhapus', `Data nilai ${studentName} telah dihapus.`, 'success');
+                        return;
+                    } catch (e) {
+                        console.error(e);
+                    }
+                }
+                window.allStudentsScores = window.allStudentsScores.filter(s => s.id !== studentId);
+                safeSetStorage('biodiv_recap_scores', window.allStudentsScores);
+                window.renderRecapTable();
+                Swal.fire('Terhapus', `Data nilai ${studentName} telah dihapus.`, 'success');
+                return;
+            }
+
+            if (newScore !== undefined && newScore !== '') {
+                const parsedScore = Math.max(0, Math.min(100, parseInt(newScore, 10)));
+                if (isNaN(parsedScore)) {
+                    Swal.fire('Tidak Valid', 'Masukkan angka nilai yang valid (0-100).', 'warning');
+                    return;
+                }
+                if (db && firestoreMod) {
+                    try {
+                        const docRef = firestoreMod.doc(db, 'artifacts', appId, 'public', 'data', 'student_scores', studentId);
+                        await firestoreMod.updateDoc(docRef, {
+                            totalSkor: parsedScore,
+                            timestamp: new Date().toISOString()
+                        });
+                        Swal.fire('Tersimpan', `Nilai ${studentName} diperbarui menjadi ${parsedScore}.`, 'success');
+                        return;
+                    } catch (e) {
+                        console.error(e);
+                    }
+                }
+                const target = window.allStudentsScores.find(s => s.id === studentId);
+                if (target) {
+                    target.totalSkor = parsedScore;
+                    target.timestamp = new Date().toISOString();
+                    window.allStudentsScores.sort((a, b) => b.totalSkor - a.totalSkor);
+                    safeSetStorage('biodiv_recap_scores', window.allStudentsScores);
+                    window.renderRecapTable();
+                }
+                Swal.fire('Tersimpan', `Nilai ${studentName} diperbarui menjadi ${parsedScore}.`, 'success');
+            }
+        };
+
+        // Fungsi Export ke Excel / Google Sheets (Rapi per Kolom)
+        window.exportToCSV = function() {
+            if (window.allStudentsScores.length === 0) {
+                Swal.fire('Kosong', 'Belum ada data nilai untuk diunduh.', 'info');
+                return;
+            }
+            
+            let tableHtml = `
+                <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+                <head><meta charset="utf-8"></head>
+                <body>
+                    <table border="1">
+                        <thead>
+                            <tr style="background-color: #166534; color: #ffffff; font-weight: bold;">
+                                <th>Rank</th>
+                                <th>Nama Siswa</th>
+                                <th>Nilai Akhir (Skala 100)</th>
+                                <th>Modul 1</th>
+                                <th>Modul 2</th>
+                                <th>Modul 3</th>
+                                <th>Modul 4</th>
+                                <th>Modul 5</th>
+                                <th>Modul 6</th>
+                                <th>Modul 7</th>
+                                <th>Modul 8</th>
+                                <th>Modul 9</th>
+                                <th>Evaluasi (Max 20)</th>
+                                <th>Waktu Sinkronisasi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+
+            window.allStudentsScores.forEach((s, idx) => {
+                const m = s.modul || {};
+                tableHtml += `
+                    <tr>
+                        <td align="center">${idx + 1}</td>
+                        <td>${s.nama}</td>
+                        <td align="center" style="font-weight: bold; background-color: #dcfce7;">${s.totalSkor}</td>
+                        <td align="center">${m.M1 ?? 0}</td>
+                        <td align="center">${m.M2 ?? 0}</td>
+                        <td align="center">${m.M3 ?? 0}</td>
+                        <td align="center">${m.M4 ?? 0}</td>
+                        <td align="center">${m.M5 ?? 0}</td>
+                        <td align="center">${m.M6 ?? 0}</td>
+                        <td align="center">${m.M7 ?? 0}</td>
+                        <td align="center">${m.M8 ?? 0}</td>
+                        <td align="center">${m.M9 ?? 0}</td>
+                        <td align="center">${s.evaluasi ?? 0}</td>
+                        <td align="center">${new Date(s.timestamp).toLocaleString('id-ID')}</td>
+                    </tr>
+                `;
+            });
+
+            tableHtml += `
+                        </tbody>
+                    </table>
+                </body>
+                </html>
+            `;
+
+            const blob = new Blob([tableHtml], { type: 'application/vnd.ms-excel;charset=utf-8;' });
+            const link = document.createElement("a");
+            const url = URL.createObjectURL(blob);
+            link.setAttribute("href", url);
+            link.setAttribute("download", "Rekap_Nilai_Biosfer_Kelas_XI.xls");
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        };
+
+        // --- 1. DATA MATERI ---
+        const modulesData = [
+            {
+                id: 1,
+                title: "Mengenal Biosfer",
+                icon: "fa-globe",
+                summary: "Pengertian biosfer, karakteristik, dan hubungannya dengan geosfer lainnya.",
+                pemantik: "Pernahkah kamu berpikir, mengapa kehidupan hanya ditemukan di Bumi dan terkonsentrasi di lapisan tipis tertentu?",
+                content: `
+                    <h3 class="text-2xl font-bold text-eco-800 mb-4">Apa itu Biosfer?</h3>
+                    <p class="mb-4 text-gray-700 leading-relaxed">Biosfer berasal dari kata <i>bios</i> (hidup) dan <i>sphaira</i> (lapisan). Secara harfiah, biosfer adalah lapisan tempat makhluk hidup bernaung. Biosfer bukan hanya tentang makhluk hidupnya saja, tetapi juga interaksinya dengan lingkungan fisik bumi (litosfer, hidrosfer, dan atmosfer).</p>
+                    <div class="bg-eco-50 border-l-4 border-eco-500 p-4 mb-6 rounded-r">
+                        <strong>Fakta Unik:</strong> Jika bumi diibaratkan sebuah apel, biosfer hanyalah setipis kulit apel tersebut!
+                    </div>
+                    <h3 class="text-xl font-bold text-eco-800 mb-3">Interaksi Antarlapisan Geosfer</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 text-center">
+                        <div class="bg-white p-4 rounded shadow">
+                            <i class="fa-solid fa-cloud text-blue-400 text-3xl mb-2"></i>
+                            <h4 class="font-bold">Atmosfer</h4>
+                            <p class="text-sm">Menyediakan oksigen dan pelindung radiasi.</p>
+                        </div>
+                        <div class="bg-white p-4 rounded shadow">
+                            <i class="fa-solid fa-water text-ocean-500 text-3xl mb-2"></i>
+                            <h4 class="font-bold">Hidrosfer</h4>
+                            <p class="text-sm">Sumber air utama bagi seluruh kehidupan.</p>
+                        </div>
+                        <div class="bg-white p-4 rounded shadow">
+                            <i class="fa-solid fa-mountain text-stone-600 text-3xl mb-2"></i>
+                            <h4 class="font-bold">Litosfer</h4>
+                            <p class="text-sm">Tempat berpijak dan penyedia mineral (tanah).</p>
+                        </div>
+                    </div>
+                    <img src="https://placehold.co/800x400/22c55e/ffffff?text=Ilustrasi+Sistem+Biosfer" alt="Biosfer" class="w-full rounded-lg shadow-md mb-4">
+                `
+            },
+            {
+                id: 2,
+                title: "Faktor Persebaran",
+                icon: "fa-cloud-sun-rain",
+                summary: "Faktor iklim, edafik, relief, dan biotik yang memengaruhi flora fauna.",
+                pemantik: "Mengapa pohon kurma tidak tumbuh di pegunungan bersalju? Apa yang menghalanginya?",
+                content: `
+                    <h3 class="text-2xl font-bold text-eco-800 mb-4">Mengapa Flora dan Fauna Berbeda-beda?</h3>
+                    <p class="mb-4">Persebaran makhluk hidup di muka bumi tidak merata. Hal ini dikendalikan oleh beberapa faktor utama:</p>
+                    <ul class="space-y-4 mb-6">
+                        <li class="bg-white p-4 rounded shadow border-t-2 border-blue-400">
+                            <strong>1. Faktor Iklim (Klimatik)</strong>: Suhu, curah hujan, kelembapan, dan intensitas sinar matahari. Ini adalah faktor paling dominan.
+                        </li>
+                        <li class="bg-white p-4 rounded shadow border-t-2 border-amber-600">
+                            <strong>2. Faktor Tanah (Edafik)</strong>: Tingkat kesuburan tanah, tekstur, struktur, dan pH tanah sangat menentukan vegetasi yang dapat tumbuh.
+                        </li>
+                        <li class="bg-white p-4 rounded shadow border-t-2 border-stone-500">
+                            <strong>3. Faktor Topografi (Relief)</strong>: Ketinggian tempat (elevasi) dan kemiringan lereng memengaruhi suhu dan kelembapan.
+                        </li>
+                        <li class="bg-white p-4 rounded shadow border-t-2 border-eco-500">
+                            <strong>4. Faktor Biotik (Biologis) & Manusia</strong>: Peran makhluk hidup lain, terutama aktivitas manusia (seperti deforestasi), yang dapat menyebarkan atau memusnahkan flora dan fauna.
+                        </li>
+                        <li class="bg-white p-4 rounded shadow border-t-2 border-purple-500">
+                            <strong>5. Faktor Geologis</strong>: Sejarah perkembangan bumi, seperti pergeseran benua yang memisahkan populasi spesies masa lalu.
+                        </li>
+                    </ul>
+                    <div class="text-center mt-6">
+                        <button onclick="navigate('simulation', 'climate')" class="bg-eco-600 text-white px-6 py-3 rounded-full font-bold hover:bg-eco-700 transition shadow-lg">
+                            <i class="fa-solid fa-flask mr-2"></i> Buka Simulasi Iklim & Bioma
+                        </button>
+                    </div>
+                `
+            },
+            {
+                id: 3,
+                title: "Bioma di Dunia",
+                icon: "fa-earth-americas",
+                summary: "Karakteristik 8 bioma utama di bumi beserta flora dan faunanya.",
+                pemantik: "Jika kamu berada di gurun pasir yang terik, adaptasi seperti apa yang harus dimiliki tumbuhan agar tidak mati kekeringan?",
+                content: `
+                    <h3 class="text-2xl font-bold text-eco-800 mb-4">8 Bioma Utama di Permukaan Bumi</h3>
+                    <p class="mb-4">Bioma adalah wilayah ekologi yang luas dengan iklim, flora, dan fauna yang khas. Ayo kenali 8 bioma di dunia!</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div class="bg-white rounded-lg shadow-md overflow-hidden border-t-4 border-green-600 hover:shadow-lg transition">
+                            <img src="https://placehold.co/600x200/166534/ffffff?text=Hutan+Hujan+Tropis" class="w-full h-24 object-cover">
+                            <div class="p-4">
+                                <h4 class="font-bold text-lg text-eco-800">1. Hutan Hujan Tropis</h4>
+                                <p class="text-sm text-gray-700 mt-1"><strong>Iklim:</strong> Panas & curah hujan sangat tinggi.<br><strong>Flora:</strong> Kanopi rapat, liana, epifit (anggrek).<br><strong>Fauna:</strong> Orangutan, jaguar, toucan.</p>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-lg shadow-md overflow-hidden border-t-4 border-orange-500 hover:shadow-lg transition">
+                            <img src="https://placehold.co/600x200/ea580c/ffffff?text=Hutan+Gugur" class="w-full h-24 object-cover">
+                            <div class="p-4">
+                                <h4 class="font-bold text-lg text-orange-800">2. Hutan Gugur</h4>
+                                <p class="text-sm text-gray-700 mt-1"><strong>Iklim:</strong> Empat musim (iklim sedang).<br><strong>Flora:</strong> Pohon Oak, Maple (meranggas saat dingin).<br><strong>Fauna:</strong> Rusa, beruang cokelat, tupai.</p>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-lg shadow-md overflow-hidden border-t-4 border-emerald-800 hover:shadow-lg transition">
+                            <img src="https://placehold.co/600x200/14532d/ffffff?text=Taiga" class="w-full h-24 object-cover">
+                            <div class="p-4">
+                                <h4 class="font-bold text-lg text-emerald-900">3. Hutan Taiga (Konifer)</h4>
+                                <p class="text-sm text-gray-700 mt-1"><strong>Iklim:</strong> Musim dingin sangat panjang & dingin.<br><strong>Flora:</strong> Pinus, cemara (daun bentuk jarum).<br><strong>Fauna:</strong> Serigala, beruang hitam, moose.</p>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-lg shadow-md overflow-hidden border-t-4 border-slate-400 hover:shadow-lg transition">
+                            <img src="https://placehold.co/600x200/cbd5e1/1e293b?text=Tundra" class="w-full h-24 object-cover">
+                            <div class="p-4">
+                                <h4 class="font-bold text-lg text-slate-700">4. Tundra</h4>
+                                <p class="text-sm text-gray-700 mt-1"><strong>Iklim:</strong> Kutub, tanah beku permanen (permafrost).<br><strong>Flora:</strong> Lumut kerak, rumput pendek.<br><strong>Fauna:</strong> Beruang kutub, rusa kutub (karibu).</p>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-lg shadow-md overflow-hidden border-t-4 border-lime-500 hover:shadow-lg transition">
+                            <img src="https://placehold.co/600x200/a3e635/1e293b?text=Stepa" class="w-full h-24 object-cover">
+                            <div class="p-4">
+                                <h4 class="font-bold text-lg text-lime-800">5. Padang Rumput (Stepa)</h4>
+                                <p class="text-sm text-gray-700 mt-1"><strong>Iklim:</strong> Curah hujan rendah-sedang.<br><strong>Flora:</strong> Hamparan rumput tanpa pohon besar.<br><strong>Fauna:</strong> Bison, kuda liar, anjing prairi.</p>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-lg shadow-md overflow-hidden border-t-4 border-yellow-500 hover:shadow-lg transition">
+                            <img src="https://placehold.co/600x200/84cc16/ffffff?text=Sabana" class="w-full h-24 object-cover">
+                            <div class="p-4">
+                                <h4 class="font-bold text-lg text-yellow-800">6. Sabana</h4>
+                                <p class="text-sm text-gray-700 mt-1"><strong>Iklim:</strong> Tropis/subtropis dengan kemarau panjang.<br><strong>Flora:</strong> Padang rumput diselingi pohon (akasia).<br><strong>Fauna:</strong> Singa, zebra, jerapah, gajah.</p>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-lg shadow-md overflow-hidden border-t-4 border-amber-600 hover:shadow-lg transition">
+                            <img src="https://placehold.co/600x200/d97706/ffffff?text=Gurun" class="w-full h-24 object-cover">
+                            <div class="p-4">
+                                <h4 class="font-bold text-lg text-amber-800">7. Gurun</h4>
+                                <p class="text-sm text-gray-700 mt-1"><strong>Iklim:</strong> Sangat kering, fluktuasi suhu ekstrem.<br><strong>Flora:</strong> Kaktus (xerofit), pohon kurma.<br><strong>Fauna:</strong> Unta, kadal gurun, kalajengking.</p>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-lg shadow-md overflow-hidden border-t-4 border-yellow-300 hover:shadow-lg transition">
+                            <img src="https://placehold.co/600x200/fcd34d/1e293b?text=Mediterania" class="w-full h-24 object-cover">
+                            <div class="p-4">
+                                <h4 class="font-bold text-lg text-yellow-700">8. Bioma Mediterania</h4>
+                                <p class="text-sm text-gray-700 mt-1"><strong>Iklim:</strong> Panas/kering (panas), sejuk/basah (dingin).<br><strong>Flora:</strong> Semak belukar keras (chaparral), zaitun.<br><strong>Fauna:</strong> Kelinci, rubah, burung pemakan biji.</p>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                id: 4,
+                title: "Zoogeografi Dunia",
+                icon: "fa-paw",
+                summary: "Enam kawasan fauna dunia: Paleartik, Neartik, Neotropik, dll.",
+                pemantik: "Mengapa Kanguru tidak ditemukan secara alami di benua Amerika atau Eropa?",
+                content: `
+                    <h3 class="text-2xl font-bold text-eco-800 mb-4">6 Kawasan Fauna Dunia (Alfred Russel Wallace)</h3>
+                    <p class="mb-4">Persebaran fauna di dunia dibagi menjadi 6 wilayah utama berdasarkan kesamaan jenis hewannya.</p>
+                    <div class="bg-blue-50 p-4 rounded-lg shadow mb-6 border border-blue-200">
+                        <ul class="list-disc pl-5 space-y-2 text-gray-700">
+                            <li><strong>Paleartik:</strong> Eropa, Asia Utara. (Beruang kutub, panda, unta)</li>
+                            <li><strong>Neartik:</strong> Amerika Utara. (Bison, kalkun, karibu)</li>
+                            <li><strong>Neotropik:</strong> Amerika Selatan. (Anaconda, piranha, alpaka)</li>
+                            <li><strong>Ethiopian:</strong> Afrika. (Singa, jerapah, zebra, gorila)</li>
+                            <li><strong>Oriental:</strong> Asia Tenggara & Selatan. (Harimau, orangutan, gajah Asia)</li>
+                            <li><strong>Australis:</strong> Australia & Papua. (Kanguru, koala, cenderawasih)</li>
+                        </ul>
+                    </div>
+                `
+            },
+            {
+                id: 5,
+                title: "Keanekaragaman Hayati Indonesia",
+                icon: "fa-seedling",
+                summary: "Tingkat gen, jenis, ekosistem, dan status Indonesia sebagai megabiodiversitas.",
+                pemantik: "Tahukah kamu bahwa Indonesia adalah rumah bagi sekitar 17% spesies dunia meskipun luas daratannya hanya 1.3%?",
+                content: `
+                    <h3 class="text-2xl font-bold text-eco-800 mb-4">Indonesia: Sang Megabiodiversitas</h3>
+                    <p class="mb-4">Keanekaragaman hayati (biodiversitas) adalah variasi makhluk hidup mulai dari tingkat gen, spesies (jenis), hingga ekosistem.</p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                        <div class="bg-white p-4 rounded-lg shadow text-center border-b-4 border-eco-400">
+                            <h4 class="font-bold text-lg">Tingkat Gen</h4>
+                            <p class="text-sm mt-2 text-gray-600">Variasi dalam satu spesies. Contoh: Berbagai jenis mangga (harum manis, manalagi, golek).</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow text-center border-b-4 border-eco-500">
+                            <h4 class="font-bold text-lg">Tingkat Jenis</h4>
+                            <p class="text-sm mt-2 text-gray-600">Perbedaan antar spesies dalam satu famili. Contoh: Kucing, harimau, dan singa.</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow text-center border-b-4 border-eco-600">
+                            <h4 class="font-bold text-lg">Tingkat Ekosistem</h4>
+                            <p class="text-sm mt-2 text-gray-600">Perbedaan habitat dan interaksinya. Contoh: Ekosistem terumbu karang vs mangrove.</p>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                id: 6,
+                title: "Fauna Indonesia",
+                icon: "fa-frog",
+                summary: "Pembagian wilayah Asiatis, Peralihan, dan Australis beserta garis imajinernya.",
+                pemantik: "Mengapa jenis hewan di Pulau Bali (seperti harimau) mirip dengan di Jawa, tapi berbeda jauh dengan di Pulau Lombok?",
+                content: `
+                    <h3 class="text-2xl font-bold text-eco-800 mb-4">Garis Wallace dan Weber</h3>
+                    <p class="mb-4 text-gray-700">Sejarah geologis nusantara membagi fauna Indonesia menjadi 3 zona utama:</p>
+                    
+                    <div class="space-y-4 mb-6">
+                        <div class="bg-white p-4 rounded shadow flex items-center">
+                            <div class="w-16 h-16 bg-eco-100 rounded-full flex items-center justify-center mr-4 text-eco-600 font-bold">1</div>
+                            <div>
+                                <h4 class="font-bold text-lg text-eco-800">Tipe Asiatis (Barat)</h4>
+                                <p class="text-sm text-gray-600">Sumatra, Jawa, Kalimantan, Bali. Fauna khas mamalia besar: Gajah, Harimau, Badak, Orangutan.</p>
+                            </div>
+                        </div>
+                        <div class="bg-white p-4 rounded shadow flex items-center border-l-4 border-amber-500">
+                            <div class="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mr-4 text-amber-600 font-bold">2</div>
+                            <div>
+                                <h4 class="font-bold text-lg text-eco-800">Tipe Peralihan (Tengah/Wallacea)</h4>
+                                <p class="text-sm text-gray-600">Sulawesi, Nusa Tenggara. Spesies endemik langka: Komodo, Anoa, Babirusa, Maleo.</p>
+                            </div>
+                        </div>
+                        <div class="bg-white p-4 rounded shadow flex items-center border-l-4 border-blue-500">
+                            <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mr-4 text-blue-600 font-bold">3</div>
+                            <div>
+                                <h4 class="font-bold text-lg text-eco-800">Tipe Australis (Timur)</h4>
+                                <p class="text-sm text-gray-600">Papua, Maluku, Kep. Aru. Mirip Australia. Mamalia berkantung dan burung indah: Kanguru Pohon, Cenderawasih, Kasuari.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-eco-50 p-4 rounded text-sm text-eco-900 border-l-4 border-eco-500 mb-4">
+                        <strong>Informasi Garis Batas:</strong><br>
+                        - <strong>Garis Wallace:</strong> Memisahkan fauna Asiatis dengan Peralihan.<br>
+                        - <strong>Garis Weber:</strong> Garis keseimbangan fauna peralihan (banyak digunakan sebagai batas Asiatis-Australis secara umum).<br>
+                        - <strong>Garis Lydekker:</strong> Memisahkan fauna Peralihan dengan fauna murni Australis di ujung timur.
+                    </div>
+                    <div class="text-center mt-4">
+                        <button onclick="navigate('simulation', 'indonesia-map')" class="bg-ocean-600 text-white px-6 py-3 rounded-full font-bold hover:bg-ocean-700 transition shadow-lg">
+                            <i class="fa-solid fa-map-location-dot mr-2"></i> Buka Peta Interaktif Indonesia
+                        </button>
+                    </div>
+                `
+            },
+            {
+                id: 7,
+                title: "Flora Indonesia",
+                icon: "fa-leaf",
+                summary: "Hutan hujan tropis, mangrove, sabana, dan vegetasi khas Indonesia.",
+                pemantik: "Pernahkah kamu melihat bunga bangkai raksasa? Mengapa flora endemik seperti ini sangat rapuh?",
+                content: `
+                    <h3 class="text-2xl font-bold text-eco-800 mb-4">Kekayaan Vegetasi Indonesia</h3>
+                    <p class="mb-4">Iklim tropis dan topografi beragam menjadikan Indonesia kaya akan flora. Vegetasi dari barat ke timur dipengaruhi oleh curah hujan yang semakin berkurang.</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div class="border rounded-lg p-4 bg-white shadow-sm">
+                            <img src="https://placehold.co/300x150/15803d/ffffff?text=Hutan+Hujan+Tropis" class="w-full rounded mb-2">
+                            <h4 class="font-bold">Flora Dataran Sunda (Barat)</h4>
+                            <p class="text-sm text-gray-600">Hutan lebat, curah hujan tinggi. Khas: Meranti, Rafflesia arnoldii, Rotan, Anggrek.</p>
+                        </div>
+                        <div class="border rounded-lg p-4 bg-white shadow-sm">
+                            <img src="https://placehold.co/300x150/84cc16/ffffff?text=Sabana+Nusa+Tenggara" class="w-full rounded mb-2">
+                            <h4 class="font-bold">Flora Peralihan (Tengah)</h4>
+                            <p class="text-sm text-gray-600">Hutan musim, sabana, stepa. Adaptasi musim kemarau panjang. Khas: Kayu Cendana, Eboni, Jati.</p>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                id: 8,
+                title: "Manfaat & Ancaman",
+                icon: "fa-triangle-exclamation",
+                summary: "Nilai keanekaragaman hayati dan berbagai ancaman kepunahan.",
+                pemantik: "Apa jadinya jika hutan hujan di Kalimantan hilang? Siapa yang paling dirugikan?",
+                content: `
+                    <h3 class="text-2xl font-bold text-eco-800 mb-4">Nilai Penting & Krisis Ekologi</h3>
+                    <div class="flex flex-col md:flex-row gap-6 mb-6">
+                        <div class="flex-1 bg-green-50 p-4 rounded-lg shadow border border-green-200">
+                            <h4 class="font-bold text-green-800 mb-2"><i class="fa-solid fa-check-circle mr-2"></i>Manfaat</h4>
+                            <ul class="list-disc pl-5 space-y-1 text-sm text-gray-700">
+                                <li><strong>Ekologis:</strong> Paru-paru dunia, menjaga siklus air, penyeimbang iklim.</li>
+                                <li><strong>Ekonomis:</strong> Sumber pangan, papan, bahan baku industri.</li>
+                                <li><strong>Kesehatan:</strong> Bahan dasar obat-obatan herbal dan modern.</li>
+                                <li><strong>Sosial Budaya:</strong> Identitas adat lokal, estetika wisata.</li>
+                            </ul>
+                        </div>
+                        <div class="flex-1 bg-red-50 p-4 rounded-lg shadow border border-red-200">
+                            <h4 class="font-bold text-red-800 mb-2"><i class="fa-solid fa-skull-crossbones mr-2"></i>Ancaman</h4>
+                            <ul class="list-disc pl-5 space-y-1 text-sm text-gray-700">
+                                <li>Deforestasi dan alih fungsi lahan.</li>
+                                <li>Perburuan liar dan perdagangan ilegal.</li>
+                                <li>Pencemaran lingkungan (plastik, limbah).</li>
+                                <li>Perubahan iklim global.</li>
+                                <li>Fragmentasi habitat (terputusnya jalur satwa).</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="bg-yellow-100 p-4 rounded-lg text-sm text-yellow-800">
+                        <strong>Studi Kasus:</strong> Orangutan Kalimantan saat ini berstatus <em>Critically Endangered</em> (Sangat Terancam Punah) akibat hilangnya habitat untuk perkebunan monokultur skala besar.
+                    </div>
+                `
+            },
+            {
+                id: 9,
+                title: "Upaya Pelestarian",
+                icon: "fa-hands-holding-circle",
+                summary: "Konservasi In-Situ dan Ex-Situ, peran masyarakat.",
+                pemantik: "Jika kamu menemukan hewan langka yang terluka, apa yang harus kamu lakukan? Dipelihara atau diserahkan?",
+                content: `
+                    <h3 class="text-2xl font-bold text-eco-800 mb-4">Selamatkan Bumi Kita</h3>
+                    <p class="mb-4">Konservasi keanekaragaman hayati dilakukan melalui dua pendekatan utama:</p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                        <div class="bg-white p-5 rounded-xl shadow-md border-t-4 border-eco-500">
+                            <h4 class="font-bold text-xl text-eco-800 mb-2">Konservasi In-Situ</h4>
+                            <p class="text-sm text-gray-600 mb-3">Pelestarian dilakukan <strong>di habitat aslinya</strong>.</p>
+                            <ul class="list-disc pl-5 text-sm text-gray-700">
+                                <li>Taman Nasional (Misal: TN Komodo, TN Ujung Kulon)</li>
+                                <li>Cagar Alam</li>
+                                <li>Suaka Margasatwa</li>
+                            </ul>
+                        </div>
+                        <div class="bg-white p-5 rounded-xl shadow-md border-t-4 border-blue-500">
+                            <h4 class="font-bold text-xl text-blue-800 mb-2">Konservasi Ex-Situ</h4>
+                            <p class="text-sm text-gray-600 mb-3">Pelestarian dilakukan <strong>di luar habitat aslinya</strong> (karena habitat asli rusak/hilang).</p>
+                            <ul class="list-disc pl-5 text-sm text-gray-700">
+                                <li>Kebun Binatang</li>
+                                <li>Kebun Raya (Misal: Kebun Raya Bogor)</li>
+                                <li>Taman Safari</li>
+                                <li>Penangkaran</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <p class="text-center font-semibold text-eco-700 bg-eco-100 py-3 rounded-lg">Kesadaran dan aksi nyata masyarakat adalah kunci keberhasilan konservasi.</p>
+                `
+            }
+        ];
+
+        // --- 2. DATA KUIS ---
+        const quizData = {
+            1: [
+                { q: "Apa yang dimaksud dengan biosfer?", options: ["Lapisan udara", "Lapisan batuan", "Lapisan tempat makhluk hidup", "Lapisan air"], a: 2 },
+                { q: "Keseluruhan ekosistem di bumi merupakan pengertian dari...", options: ["Bioma", "Biosfer", "Populasi", "Habitat"], a: 1 },
+                { q: "Cabang ilmu geografi yang mempelajari persebaran flora dan fauna adalah...", options: ["Geomorfologi", "Biogeografi", "Klimatologi", "Oseanografi"], a: 1 },
+                { q: "Lapisan yang menyuplai oksigen untuk makhluk hidup di biosfer adalah...", options: ["Litosfer", "Atmosfer", "Hidrosfer", "Astenosfer"], a: 1 },
+                { q: "Berikut yang merupakan komponen abiotik penyusun ekosistem adalah...", options: ["Manusia, hewan, tumbuhan", "Air, tanah, udara", "Bakteri dan jamur", "Hanya tumbuhan"], a: 1 }
+            ],
+            2: [
+                { q: "Faktor iklim yang paling dominan memengaruhi persebaran tumbuhan adalah...", options: ["Suhu dan Angin", "Kelembapan dan Tanah", "Suhu dan Curah Hujan", "Tekanan udara dan Relief"], a: 2 },
+                { q: "Sifat fisik dan kimia tanah yang memengaruhi flora disebut faktor...", options: ["Klimatik", "Edafik", "Fisiografis", "Biotik"], a: 1 },
+                { q: "Perbedaan suhu udara akibat perbedaan ketinggian tempat termasuk faktor...", options: ["Geologis", "Edafik", "Topografi/Relief", "Biotik"], a: 2 },
+                { q: "Aktivitas manusia melakukan deforestasi termasuk dalam pengaruh faktor...", options: ["Biotik", "Klimatik", "Edafik", "Relief"], a: 0 },
+                { q: "Hambatan berupa samudera yang luas bagi persebaran fauna disebut hambatan...", options: ["Biologis", "Geografis", "Edafik", "Iklim"], a: 1 }
+            ],
+            3: [
+                { q: "Bioma yang memiliki ciri curah hujan sangat rendah dan amplitudo suhu harian tinggi adalah...", options: ["Tundra", "Taiga", "Gurun", "Sabana"], a: 2 },
+                { q: "Permafrost atau tanah yang beku permanen adalah ciri khas bioma...", options: ["Hutan Gugur", "Taiga", "Tundra", "Stepa"], a: 2 },
+                { q: "Hutan berdaun jarum (konifer) banyak terdapat di bioma...", options: ["Taiga", "Gurun", "Sabana", "Tundra"], a: 0 },
+                { q: "Bioma dengan tingkat keanekaragaman hayati (biodiversitas) tertinggi adalah...", options: ["Taiga", "Hutan Hujan Tropis", "Padang Rumput", "Hutan Gugur"], a: 1 },
+                { q: "Tumbuhan xerofit beradaptasi dengan cara...", options: ["Menggugurkan daun", "Daun lebar", "Daun berduri tebal untuk mengurangi penguapan", "Akar napas"], a: 2 }
+            ],
+            4: [
+                { q: "Wilayah zoogeografi yang meliputi Benua Australia, Selandia Baru, dan Papua adalah...", options: ["Oriental", "Neotropik", "Paleartik", "Australis"], a: 3 },
+                { q: "Hewan endemik kawasan Ethiopian (Afrika) contohnya adalah...", options: ["Kangguru", "Harimau", "Jerapah", "Bison"], a: 2 },
+                { q: "Panda dan Unta merupakan fauna khas yang berasal dari wilayah...", options: ["Neartik", "Paleartik", "Oriental", "Australis"], a: 1 },
+                { q: "Kawasan Oriental meliputi wilayah...", options: ["Asia Tenggara dan Selatan", "Eropa Barat", "Amerika Selatan", "Australia"], a: 0 },
+                { q: "Piranha, Anaconda, dan Alpaka banyak ditemukan di kawasan...", options: ["Neotropik", "Neartik", "Ethiopian", "Paleartik"], a: 0 }
+            ],
+            5: [
+                { q: "Perbedaan warna bulu pada ayam merupakan contoh keanekaragaman tingkat...", options: ["Gen", "Jenis", "Spesies", "Ekosistem"], a: 0 },
+                { q: "Alasan utama tingginya biodiversitas di Indonesia adalah...", options: ["Negara maju", "Iklim subtropis", "Terletak di garis khatulistiwa (iklim tropis)", "Banyak pegunungan es"], a: 2 },
+                { q: "Keanekaragaman ekosistem sabana, tundra, dan hutan hujan tropis termasuk tingkat...", options: ["Genetik", "Spesies", "Populasi", "Ekosistem"], a: 3 },
+                { q: "Burung Jalak Bali adalah satwa endemik pulau...", options: ["Jawa", "Sumatra", "Bali", "Lombok"], a: 2 },
+                { q: "Tumbuhan berbunga terbesar di dunia yang ditemukan di Sumatra adalah...", options: ["Mawar", "Melati", "Rafflesia arnoldii", "Kantong semar"], a: 2 }
+            ],
+            6: [
+                { q: "Garis khayal yang memisahkan fauna tipe Asiatis dengan tipe Peralihan adalah...", options: ["Garis Khatulistiwa", "Garis Weber", "Garis Wallace", "Garis Lintang"], a: 2 },
+                { q: "Hewan khas wilayah peralihan (Sulawesi) adalah...", options: ["Orangutan", "Komodo dan Anoa", "Kasuari", "Gajah"], a: 1 },
+                { q: "Garis yang membatasi wilayah fauna tipe Peralihan dengan Australis secara spesifik di timur adalah...", options: ["Garis Wallace", "Garis Weber", "Garis Lydekker", "Garis Astronomis"], a: 2 },
+                { q: "Berikut adalah fauna khas wilayah Asiatis (Barat), kecuali...", options: ["Harimau", "Gajah", "Cenderawasih", "Badak cula satu"], a: 2 },
+                { q: "Hewan mamalia berkantung merupakan ciri khas wilayah...", options: ["Oriental", "Asiatis", "Peralihan", "Australis"], a: 3 }
+            ],
+            7: [
+                { q: "Bunga Rafflesia arnoldii banyak ditemukan di pulau...", options: ["Papua", "Jawa", "Sumatra", "Bali"], a: 2 },
+                { q: "Hutan yang daunnya meranggas pada musim kemarau untuk mengurangi penguapan disebut...", options: ["Hutan Hujan Tropis", "Hutan Musim", "Hutan Mangrove", "Hutan Rawa"], a: 1 },
+                { q: "Flora khas di wilayah dataran Sunda (Indonesia Barat) umumnya didominasi oleh...", options: ["Hutan Sabana", "Hutan Hujan Tropis", "Padang Rumput", "Tundra"], a: 1 },
+                { q: "Tumbuhan kayu Cendana yang wangi banyak tumbuh alami di...", options: ["Kalimantan", "Nusa Tenggara", "Sumatra", "Papua"], a: 1 },
+                { q: "Ekosistem yang mendominasi pesisir pantai berlumpur di Indonesia adalah...", options: ["Hutan Musim", "Hutan Konifer", "Hutan Mangrove", "Sabana"], a: 2 }
+            ],
+            8: [
+                { q: "Fungsi ekologis hutan hujan tropis bagi bumi adalah...", options: ["Menghasilkan kayu balok", "Sebagai paru-paru dunia penyerap karbon", "Tempat berburu satwa", "Meningkatkan suhu global"], a: 1 },
+                { q: "Ancaman terbesar bagi satwa liar saat ini adalah...", options: ["Siklus alami", "Kehilangan habitat (deforestasi)", "Evolusi lambat", "Predator alami"], a: 1 },
+                { q: "Pemanfaatan tanaman kina untuk obat malaria termasuk manfaat keanekaragaman hayati di bidang...", options: ["Ekologi", "Ekonomi", "Kesehatan", "Sosial Budaya"], a: 2 },
+                { q: "Fragmentasi habitat menyebabkan dampak buruk yaitu...", options: ["Memudahkan hewan mencari makan", "Memutuskan jalur migrasi dan isolasi populasi", "Meningkatkan kesuburan tanah", "Mengurangi pemanasan global"], a: 1 },
+                { q: "Efek dari pembakaran hutan bagi lingkungan secara luas adalah...", options: ["Penurunan emisi karbon", "Peningkatan oksigen", "Polusi udara dan hilangnya biodiversitas", "Menyuburkan hutan secara instan"], a: 2 }
+            ],
+            9: [
+                { q: "Pelestarian badak bercula satu di Taman Nasional Ujung Kulon termasuk konservasi...", options: ["Ex-situ", "In-situ", "Budidaya", "Rehabilitasi"], a: 1 },
+                { q: "Kebun Raya Bogor merupakan contoh pelestarian...", options: ["In-situ", "Ex-situ", "Cagar alam", "Suaka Margasatwa"], a: 1 },
+                { q: "Kawasan yang fungsi utamanya melindungi keanekaragaman satwa tertentu tanpa campur tangan manusia yang berlebihan adalah...", options: ["Kebun Binatang", "Suaka Margasatwa", "Taman Kota", "Penangkaran"], a: 1 },
+                { q: "Berikut ini yang termasuk upaya ex-situ adalah...", options: ["Taman Nasional Komodo", "Taman Safari", "Cagar Alam Bunga Bangkai", "Hutan Lindung"], a: 1 },
+                { q: "Peran siswa dalam pelestarian biodiversitas yang paling tepat adalah...", options: ["Membeli hewan langka untuk dijaga", "Tidak membuang sampah di alam dan mendukung reboisasi", "Ikut berburu secara legal", "Membiarkan pemerintah bekerja sendiri"], a: 1 }
+            ]
+        };
+
+        const evaluationQuestions = [
+            { q: "1. Komponen lapisan bumi tempat berinteraksinya makhluk hidup dengan lingkungan abiotik disebut...", options: ["Litosfer", "Atmosfer", "Biosfer", "Antroposfer"], a: 2 },
+            { q: "2. Suhu udara menurun seiring bertambahnya ketinggian tempat. Hal ini menyebabkan vegetasi di dataran rendah berbeda dengan di pegunungan. Faktor yang memengaruhi adalah...", options: ["Edafik", "Klimatik", "Fisiografis/Topografi", "Biotik"], a: 2 },
+            { q: "3. Tumbuhan Xerofit seperti kaktus sangat adaptif pada kondisi lingkungan...", options: ["Suhu rendah, curah hujan tinggi", "Suhu tinggi, curah hujan rendah", "Kelembapan tinggi, kurang cahaya", "Suhu musiman stabil"], a: 1 },
+            { q: "4. Fauna seperti tapir, orangutan, dan harimau di Indonesia digolongkan dalam wilayah persebaran...", options: ["Australis", "Peralihan", "Asiatis", "Neotropik"], a: 2 },
+            { q: "5. Garis imajiner yang memisahkan fauna tipe Peralihan (Tengah) dengan Australis (Timur) secara spesifik dinamakan garis...", options: ["Wallace", "Weber", "Lydekker", "Bujur"], a: 2 },
+            { q: "6. Sebuah kawasan konservasi difungsikan khusus untuk melindungi tumbuhan langka dan ekosistemnya tanpa campur tangan manusia. Kawasan ini disebut...", options: ["Taman Safari", "Kebun Binatang", "Cagar Alam", "Suaka Margasatwa"], a: 2 },
+            { q: "7. Analisis Tingkat Tinggi: Mengapa pembangunan jalan tol yang membelah hutan hujan tropis menjadi ancaman sangat serius bagi kelestarian satwa seperti gajah dan harimau?", options: ["Mempercepat distribusi hasil hutan kayu", "Menyebabkan fragmentasi habitat yang memutus rute migrasi dan mencari makan", "Memudahkan petugas jagawana berpatroli", "Meningkatkan suhu tanah secara langsung"], a: 1 },
+            { q: "8. Jika terjadi penebangan hutan mangrove secara masif di pesisir, dampak ekologis seketika yang terjadi adalah...", options: ["Populasi orangutan terancam", "Intrusi air laut dan abrasi pantai meningkat pesat", "Suhu udara pegunungan turun", "Tanah longsor di dataran tinggi pegunungan"], a: 1 },
+            { q: "9. Flora endemik wilayah Wallacea (Nusa Tenggara) yang kayunya harum dan rentan eksploitasi berlebihan adalah...", options: ["Meranti", "Jati", "Eboni", "Cendana"], a: 3 },
+            { q: "10. Beruang kutub dan lumut kerak adalah kombinasi flora fauna khas pada bioma...", options: ["Taiga", "Gurun Dingin", "Tundra", "Sabana"], a: 2 },
+            { q: "11. Salah satu karakteristik wilayah Ethiopian (Benua Afrika) adalah curah hujan musiman yang mendukung keberadaan padang rumput luas tempat fauna seperti singa dan zebra hidup. Bioma dominan tersebut adalah...", options: ["Hutan Gugur", "Taiga", "Tundra", "Sabana"], a: 3 },
+            { q: "12. Spesies endemik adalah spesies yang...", options: ["Bisa hidup di berbagai negara", "Hanya dapat ditemukan secara alami di satu wilayah geografis tertentu", "Hasil rekayasa genetika", "Sering bermigrasi antar benua"], a: 1 },
+            { q: "13. Tingkat keanekaragaman hayati yang ditunjukkan dari variasi varietas padi (Cianjur, Rojolele, IR64) adalah tingkat...", options: ["Genetik", "Spesies/Jenis", "Populasi", "Ekosistem"], a: 0 },
+            { q: "14. Secara geologis, mengapa fauna wilayah Asiatis di Indonesia sangat mirip dengan fauna daratan Asia?", options: ["Karena manusia memindahkannya pada zaman dulu", "Karena dahulunya pada zaman es pulau-pulau di barat bersatu dengan daratan Asia (Paparan Sunda)", "Karena iklimnya tiba-tiba berubah sama", "Akibat letusan gunung berapi yang mengirimkan spora/bibit"], a: 1 },
+            { q: "15. Hutan musim tropis seperti di Jawa Tengah dan Timur memiliki adaptasi unik pada musim kemarau, yaitu...", options: ["Daun berubah warna menjadi merah", "Menumbuhkan buah lebih cepat", "Menggugurkan daunnya (meranggas) untuk mengurangi transpirasi", "Menyerap air dari udara"], a: 2 },
+            { q: "16. Berikut yang BUKAN merupakan upaya konservasi in-situ adalah pelestarian flora fauna di...", options: ["Taman Nasional Way Kambas", "Kebun Raya Cibodas", "Cagar Alam Pangandaran", "Suaka Margasatwa Baluran"], a: 1 },
+            { q: "17. Indonesia disebut sebagai salah satu negara *Megabiodiversity* di dunia. Faktor utama yang menyebabkannya adalah...", options: ["Beriklim subtropis yang sejuk", "Posisi lintang di khatulistiwa dan kondisi geografis kepulauan (archipelago)", "Memiliki teknologi konservasi tercanggih", "Wilayah daratan terluas di dunia tanpa perairan"], a: 1 },
+            { q: "18. Fauna kawasan Australis (Papua, Kep. Aru) memiliki ciri khas yang berbeda dengan Asiatis, ciri tersebut adalah...", options: ["Banyak jenis kera", "Mamalia berukuran sangat besar", "Banyak mamalia berkantung dan burung berbulu indah", "Banyak jenis ikan air tawar endemik besar"], a: 2 },
+            { q: "19. Apabila suatu kawasan hutan lindung dikonversi menjadi perkebunan kelapa sawit monokultur, dampak biologis utamanya adalah...", options: ["Produktivitas oksigen akan meningkat dua kali lipat", "Keanekaragaman hayati menurun drastis karena hilangnya variasi habitat", "Tanah semakin subur dan kaya hara", "Satwa liar akan beradaptasi dengan cepat makan sawit"], a: 1 },
+            { q: "20. Pembelajaran Mendalam (Deep Learning): Tindakan paling bermakna dan bertanggung jawab yang bisa kamu lakukan sebagai pelajar untuk menjaga keanekaragaman hayati lokal adalah...", options: ["Membeli satwa langka yang lucu untuk dipelihara dan diselamatkan di rumah", "Mempelajari, mendokumentasikan, dan tidak merusak habitat alami di sekitar serta melakukan penghijauan", "Berburu satwa liar hanya untuk tujuan koleksi sains", "Mengabaikannya, membiarkan pemerintah saja yang bekerja dan berpikir"], a: 1 }
+        ];
+
+        // --- 3. DATA GALERI ---
+        const galleryData = [
+            { name: "Orangutan", sci: "Pongo pygmaeus", type: "Fauna", region: "Asiatis", status: "Kritis (CR)", img: "https://placehold.co/400x300/c2410c/ffffff?text=Orangutan" },
+            { name: "Harimau Sumatra", sci: "Panthera tigris sumatrae", type: "Fauna", region: "Asiatis", status: "Kritis (CR)", img: "https://placehold.co/400x300/ea580c/ffffff?text=Harimau+Sumatra" },
+            { name: "Komodo", sci: "Varanus komodoensis", type: "Fauna", region: "Peralihan", status: "Rentan (VU)", img: "https://placehold.co/400x300/65a30d/ffffff?text=Komodo" },
+            { name: "Anoa", sci: "Bubalus depressicornis", type: "Fauna", region: "Peralihan", status: "Terancam (EN)", img: "https://placehold.co/400x300/4d7c0f/ffffff?text=Anoa" },
+            { name: "Burung Cenderawasih", sci: "Paradisaeidae", type: "Fauna", region: "Australis", status: "Risiko Rendah (LC)", img: "https://placehold.co/400x300/eab308/ffffff?text=Cenderawasih" },
+            { name: "Kasuari", sci: "Casuarius", type: "Fauna", region: "Australis", status: "Rentan (VU)", img: "https://placehold.co/400x300/1e40af/ffffff?text=Kasuari" },
+            { name: "Rafflesia arnoldii", sci: "Rafflesia arnoldii", type: "Flora", region: "Asiatis", status: "Terancam (EN)", img: "https://placehold.co/400x300/be123c/ffffff?text=Rafflesia+arnoldii" },
+            { name: "Kayu Cendana", sci: "Santalum album", type: "Flora", region: "Peralihan", status: "Rentan (VU)", img: "https://placehold.co/400x300/a16207/ffffff?text=Cendana" },
+            { name: "Matoa", sci: "Pometia pinnata", type: "Flora", region: "Australis", status: "Risiko Rendah (LC)", img: "https://placehold.co/400x300/15803d/ffffff?text=Matoa" },
+            { name: "Bunga Bangkai", sci: "Amorphophallus titanum", type: "Flora", region: "Asiatis", status: "Terancam (EN)", img: "https://placehold.co/400x300/4c1d95/ffffff?text=Bunga+Bangkai" }
+        ];
+
+        // --- STATE MANAGEMENT ---
+        let state = {
+            progress: safeGetStorage('biodiv_progress', []),
+            score: parseInt(safeGetStorage('biodiv_score', 0), 10) || 0,
+            moduleScores: safeGetStorage('biodiv_mod_scores', {}),
+            evalScore: parseInt(safeGetStorage('biodiv_eval_score', 0), 10) || 0,
+            currentModule: null
+        };
+
+        function updateScore(points) {
+            state.score += points;
+            safeSetStorage('biodiv_score', state.score);
+            document.getElementById('nav-score').innerText = state.score + " Poin";
+        }
+
+        function markModuleCompleted(id) {
+            if (!state.progress.includes(id)) {
+                state.progress.push(id);
+                safeSetStorage('biodiv_progress', state.progress);
+                Swal.fire({ title: 'Modul Selesai!', text: 'Kamu mendapatkan +50 Poin!', icon: 'success', confirmButtonColor: '#22c55e' });
+                updateScore(50);
+            }
+        }
+
+        // --- ROUTING & RENDERING ---
+        const container = document.getElementById('app-container');
+
+        window.navigate = function(screen, param = null) {
+            window.currentScreen = screen;
+            const mobileMenu = document.getElementById('mobile-menu');
+            if (mobileMenu) mobileMenu.classList.add('hidden');
+            window.scrollTo(0, 0);
+
+            let html = '';
+            switch (screen) {
+                case 'home': html = renderHome(); break;
+                case 'dashboard': html = renderDashboard(); break;
+                case 'module': html = renderModule(param); state.currentModule = param; break;
+                case 'quiz': html = renderQuiz(param); break;
+                case 'gallery': html = renderGallery(); break;
+                case 'simulation': html = renderSimulation(param); break;
+                case 'evaluation': html = renderEvaluation(); break;
+                case 'project': html = renderProject(); break;
+                case 'recap': html = renderRecapPage(); break;
+                default: html = renderHome(); break;
+            }
+            container.innerHTML = `<div class="fade-in w-full h-full">${html}</div>`;
+            
+            // Jalankan inisialisasi khusus halaman setelah DOM terpasang
+            if (screen === 'quiz') setTimeout(window.loadQuestion, 30);
+            if (screen === 'simulation') bindSimulationEvents();
+            if (screen === 'gallery') bindGalleryEvents();
+            if (screen === 'recap') window.renderRecapTable();
+        };
+        const navigate = window.navigate;
+
+        // --- VIEWS ---
+
+        function renderHome() {
+            return `
+                <div class="relative bg-eco-900 text-white overflow-hidden flex-grow flex items-center min-h-[85vh]">
+                    <div class="absolute inset-0 opacity-40 mix-blend-overlay">
+                        <img src="https://placehold.co/1920x1080/166534/22c55e?text=Hutan+Tropis+Indonesia" class="w-full h-full object-cover" alt="Background">
+                    </div>
+                    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                        <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight mb-4 drop-shadow-lg">
+                            Jelajahi <span class="text-eco-400">Biosfer</span> &<br>Keanekaragaman Hayati
+                        </h1>
+                        <p class="mt-4 text-xl md:text-2xl text-eco-100 max-w-3xl mx-auto mb-8 font-light">
+                            Mengenal Kekayaan Flora dan Fauna Indonesia serta Dunia. Mari lestarikan kehidupan untuk masa depan.
+                        </p>
+                        <div class="flex flex-col sm:flex-row justify-center gap-4">
+                            <button onclick="navigate('dashboard')" class="bg-eco-500 hover:bg-eco-400 text-white font-bold py-3 px-8 rounded-full text-lg shadow-lg transition transform hover:scale-105">
+                                <i class="fa-solid fa-rocket mr-2"></i> Mulai Belajar
+                            </button>
+                            <button onclick="Swal.fire({title:'Petunjuk Penggunaan', html:'1. Buka <b>Modul</b> untuk membaca materi.<br>2. Selesaikan <b>Kuis</b> di setiap modul untuk mendapat poin.<br>3. Gunakan <b>Simulasi</b> untuk interaksi visual.<br>4. Uji kemampuanmu di <b>Evaluasi Akhir</b>.', icon:'info', confirmButtonColor: '#22c55e'})" class="bg-transparent border-2 border-white hover:bg-white hover:text-eco-900 text-white font-bold py-3 px-8 rounded-full text-lg transition">
+                                <i class="fa-solid fa-circle-question mr-2"></i> Petunjuk
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderDashboard() {
+            let cards = modulesData.map(mod => {
+                const isDone = state.progress.includes(mod.id);
+                return `
+                    <div class="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden border ${isDone ? 'border-eco-500' : 'border-gray-200'}">
+                        <div class="${isDone ? 'bg-eco-600' : 'bg-slate-700'} text-white p-4 flex items-center justify-between">
+                            <div class="font-bold text-lg">Modul ${mod.id}</div>
+                            <i class="fa-solid ${mod.icon} text-2xl opacity-80"></i>
+                        </div>
+                        <div class="p-5">
+                            <h3 class="font-bold text-xl mb-2 text-slate-800">${mod.title}</h3>
+                            <p class="text-gray-600 text-sm mb-4 min-h-[40px]">${mod.summary}</p>
+                            <div class="flex justify-between items-center mt-4">
+                                ${isDone ? '<span class="text-eco-600 text-sm font-bold"><i class="fa-solid fa-check-circle"></i> Selesai</span>' : '<span class="text-slate-400 text-sm"><i class="fa-regular fa-circle"></i> Belum Selesai</span>'}
+                                <button onclick="navigate('module', ${mod.id})" class="bg-eco-100 text-eco-700 hover:bg-eco-600 hover:text-white px-4 py-2 rounded font-semibold transition">
+                                    Pelajari <i class="fa-solid fa-arrow-right ml-1"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            return `
+                <div class="max-w-7xl mx-auto px-4 py-8 w-full">
+                    <div class="mb-8 border-b border-gray-200 pb-4">
+                        <h2 class="text-3xl font-bold text-eco-900"><i class="fa-solid fa-book-open mr-2"></i> Dashboard Pembelajaran</h2>
+                        <p class="text-gray-600 mt-2">Pilih modul pembelajaran di bawah ini secara berurutan.</p>
+                        
+                        <div class="mt-4 flex gap-4">
+                            <button onclick="navigate('evaluation')" class="bg-red-600 text-white px-4 py-2 rounded-lg font-bold shadow hover:bg-red-700"><i class="fa-solid fa-pen-to-square mr-1"></i> Evaluasi Akhir</button>
+                            <button onclick="navigate('project')" class="bg-ocean-600 text-white px-4 py-2 rounded-lg font-bold shadow hover:bg-ocean-700"><i class="fa-solid fa-people-group mr-1"></i> Projek Kolaboratif</button>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        ${cards}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderModule(id) {
+            const mod = modulesData.find(m => m.id === id);
+            if(!mod) return `<div class="p-8 text-center">Modul tidak ditemukan.</div>`;
+
+            return `
+                <div class="max-w-4xl mx-auto px-4 py-8 w-full">
+                    <button onclick="navigate('dashboard')" class="text-gray-500 hover:text-eco-600 mb-6 flex items-center transition"><i class="fa-solid fa-arrow-left mr-2"></i> Kembali ke Dashboard</button>
+                    
+                    <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+                        <div class="bg-eco-800 text-white p-6 md:p-8">
+                            <div class="text-eco-300 font-bold mb-2 uppercase tracking-wider text-sm">Modul ${mod.id}</div>
+                            <h2 class="text-3xl md:text-4xl font-extrabold">${mod.title}</h2>
+                        </div>
+                        
+                        <!-- PEMANTIK (Mindful Learning) -->
+                        <div class="bg-yellow-50 border-l-4 border-yellow-400 p-6 m-6 rounded-r-lg">
+                            <div class="flex items-start">
+                                <i class="fa-solid fa-lightbulb text-yellow-500 text-2xl mr-4 mt-1"></i>
+                                <div>
+                                    <h4 class="font-bold text-yellow-800 mb-1">Pertanyaan Pemantik</h4>
+                                    <p class="text-gray-700 italic">${mod.pemantik}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-6 md:p-8 pt-0 prose max-w-none text-gray-800">
+                            ${mod.content}
+                        </div>
+                        
+                        <div class="bg-gray-50 p-6 md:p-8 border-t border-gray-100 flex flex-col sm:flex-row justify-between items-center gap-4">
+                            <button onclick="Swal.fire({title:'Refleksi', html:'Apa hal baru yang kamu pelajari dari modul ini? Bagaimana kaitannya dengan lingkungan sekitarmu?', icon:'question', confirmButtonColor: '#22c55e'})" class="text-eco-600 font-semibold hover:underline">
+                                <i class="fa-solid fa-brain mr-1"></i> Jawab Refleksi
+                            </button>
+                            <button onclick="navigate('quiz', ${mod.id})" class="bg-eco-600 text-white px-8 py-3 rounded-full font-bold shadow hover:bg-eco-700 transition flex items-center">
+                                Mulai Kuis Formatif <i class="fa-solid fa-play ml-2"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderQuiz(id) {
+            const questions = quizData[id];
+            if(!questions) return `<div class="p-8">Kuis tidak tersedia.</div>`;
+
+            // State khusus kuis
+            window.currentQuizQuestions = questions;
+            window.currentQuizIndex = 0;
+            window.currentQuizScore = 0;
+            window.currentModuleId = id;
+
+            return `
+                <div class="max-w-3xl mx-auto px-4 py-12 w-full">
+                    <div class="bg-white rounded-xl shadow-xl overflow-hidden">
+                        <div class="bg-eco-600 p-4 text-white flex justify-between items-center">
+                            <h3 class="font-bold text-lg">Kuis Modul ${id}</h3>
+                            <span class="text-sm bg-eco-800 px-3 py-1 rounded-full">Soal <span id="q-counter">1</span> / ${questions.length}</span>
+                        </div>
+                        <div class="p-8" id="quiz-body">
+                            <!-- Question injected here -->
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Global functions for quiz logic to bypass inline string closure issues
+        window.loadQuestion = function() {
+            const q = window.currentQuizQuestions[window.currentQuizIndex];
+            document.getElementById('q-counter').innerText = (window.currentQuizIndex + 1);
+            
+            let optionsHtml = q.options.map((opt, i) => `
+                <button onclick="window.checkAnswer(${i})" class="w-full text-left p-4 mb-3 border border-gray-300 rounded-lg hover:bg-eco-50 hover:border-eco-500 transition duration-200">
+                    ${String.fromCharCode(65 + i)}. ${opt}
+                </button>
+            `).join('');
+
+            document.getElementById('quiz-body').innerHTML = `
+                <h4 class="text-xl font-bold text-gray-800 mb-6">${q.q}</h4>
+                <div class="space-y-2">
+                    ${optionsHtml}
+                </div>
+            `;
+        };
+
+        window.checkAnswer = function(selectedIndex) {
+            const q = window.currentQuizQuestions[window.currentQuizIndex];
+            const isCorrect = (selectedIndex === q.a);
+            
+            if(isCorrect) {
+                window.currentQuizScore++;
+                Swal.fire({ icon: 'success', title: 'Benar!', text: 'Jawaban kamu tepat.', timer: 1500, showConfirmButton: false });
+            } else {
+                Swal.fire({ icon: 'error', title: 'Kurang Tepat', text: `Jawaban yang benar adalah: ${q.options[q.a]}`, confirmButtonColor: '#22c55e' });
+            }
+
+            window.currentQuizIndex++;
+            if(window.currentQuizIndex < window.currentQuizQuestions.length) {
+                setTimeout(() => window.loadQuestion(), 1600);
+            } else {
+                setTimeout(() => window.finishQuiz(), 1600);
+            }
+        };
+
+        window.finishQuiz = function() {
+            const total = window.currentQuizQuestions.length;
+            const threshold = total / 2; // Lulus jika benar > 50%
+            const isPassed = window.currentQuizScore > threshold;
+            
+            // Simpan skor per modul
+            state.moduleScores[window.currentModuleId] = window.currentQuizScore;
+            safeSetStorage('biodiv_mod_scores', state.moduleScores);
+            
+            let resultHtml = `
+                <div class="text-center">
+                    <div class="text-6xl mb-4 ${isPassed ? 'text-eco-500' : 'text-red-500'}">
+                        <i class="fa-solid ${isPassed ? 'fa-trophy' : 'fa-face-frown'}"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-2">Skor: ${window.currentQuizScore} dari ${total}</h3>
+                    <p class="text-gray-600 mb-6">${isPassed ? 'Hebat! Kamu menguasai materi ini.' : 'Jangan menyerah, baca lagi materinya dan ulangi ya!'}</p>
+                    <button onclick="navigate('module', ${window.currentModuleId})" class="bg-eco-600 text-white px-6 py-2 rounded-full font-bold shadow hover:bg-eco-700 mr-2">Kembali ke Modul</button>
+                </div>
+            `;
+            document.getElementById('quiz-body').innerHTML = resultHtml;
+            
+            if(isPassed) markModuleCompleted(window.currentModuleId);
+        };
+
+        function renderGallery() {
+            return `
+                <div class="max-w-7xl mx-auto px-4 py-8 w-full">
+                    <h2 class="text-3xl font-bold text-eco-900 mb-6"><i class="fa-solid fa-images mr-2"></i> Galeri Flora & Fauna</h2>
+                    
+                    <div class="mb-6 flex gap-4 flex-wrap">
+                        <select id="filter-type" class="border border-gray-300 rounded px-4 py-2 focus:outline-none focus:border-eco-500">
+                            <option value="all">Semua Jenis</option>
+                            <option value="Flora">Flora</option>
+                            <option value="Fauna">Fauna</option>
+                        </select>
+                        <select id="filter-region" class="border border-gray-300 rounded px-4 py-2 focus:outline-none focus:border-eco-500">
+                            <option value="all">Semua Wilayah</option>
+                            <option value="Asiatis">Asiatis</option>
+                            <option value="Peralihan">Peralihan</option>
+                            <option value="Australis">Australis</option>
+                        </select>
+                    </div>
+
+                    <div id="gallery-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                        <!-- Cards injected via JS -->
+                    </div>
+                </div>
+            `;
+        }
+
+        function bindGalleryEvents() {
+            const renderGrid = () => {
+                const typeFilter = document.getElementById('filter-type').value;
+                const regionFilter = document.getElementById('filter-region').value;
+                
+                const filtered = galleryData.filter(item => {
+                    const matchType = typeFilter === 'all' || item.type === typeFilter;
+                    const matchRegion = regionFilter === 'all' || item.region === regionFilter;
+                    return matchType && matchRegion;
+                });
+
+                document.getElementById('gallery-grid').innerHTML = filtered.map(item => `
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition">
+                        <img src="${item.img}" alt="${item.name}" class="w-full h-40 object-cover">
+                        <div class="p-4">
+                            <div class="text-xs text-eco-600 font-bold mb-1 uppercase tracking-wider">${item.type} &bull; ${item.region}</div>
+                            <h4 class="font-bold text-lg text-gray-800">${item.name}</h4>
+                            <p class="text-sm text-gray-500 italic mb-2">${item.sci}</p>
+                            <div class="mt-2 text-xs">
+                                <span class="bg-red-100 text-red-800 px-2 py-1 rounded-full"><i class="fa-solid fa-shield-cat mr-1"></i> ${item.status}</span>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            };
+            
+            document.getElementById('filter-type').addEventListener('change', renderGrid);
+            document.getElementById('filter-region').addEventListener('change', renderGrid);
+            renderGrid();
+        }
+
+        function renderSimulation(type) {
+            let simHtml = '';
+            
+            if (type === 'indonesia-map' || !type) {
+                // Default to interactive map of Indonesia Zones
+                simHtml = `
+                    <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-100">
+                        <h3 class="text-2xl font-bold text-eco-800 mb-2">Simulasi Zona Wallace & Weber</h3>
+                        <p class="text-gray-600 mb-6">Arahkan kursor atau klik pada wilayah untuk melihat fauna endemiknya.</p>
+                        
+                        <div class="relative w-full overflow-hidden bg-[#e0f2fe] rounded-lg border-2 border-blue-200" style="aspect-ratio: 2/1;">
+                            <!-- Simplified SVG Map of Indonesia -->
+                            <svg viewBox="0 0 1000 500" class="w-full h-full">
+                                <!-- Zona Asiatis -->
+                                <path id="reg-asiatis" class="map-region fill-green-600 stroke-green-800 hover:fill-green-500" d="M100,200 L250,150 L350,250 L300,350 L150,300 Z M280,350 L400,320 L450,400 L300,420 Z" />
+                                <text x="250" y="280" class="font-bold text-white text-xl pointer-events-none">ASIATIS</text>
+                                
+                                <!-- Garis Wallace -->
+                                <path d="M480,100 L450,500" class="map-line" />
+                                <text x="460" y="120" class="fill-red-500 font-bold pointer-events-none text-sm transform -rotate-90">Garis Wallace</text>
+
+                                <!-- Zona Peralihan -->
+                                <path id="reg-peralihan" class="map-region fill-amber-500 stroke-amber-700 hover:fill-amber-400" d="M500,200 L600,180 L650,250 L600,350 L500,320 Z M520,380 L620,380 L650,420 L550,440 Z" />
+                                <text x="540" y="280" class="font-bold text-white text-xl pointer-events-none">PERALIHAN</text>
+
+                                <!-- Garis Weber -->
+                                <path d="M680,100 L700,500" class="map-line" />
+                                <text x="690" y="120" class="fill-red-500 font-bold pointer-events-none text-sm transform -rotate-90">Garis Weber</text>
+
+                                <!-- Zona Australis -->
+                                <path id="reg-australis" class="map-region fill-blue-500 stroke-blue-700 hover:fill-blue-400" d="M750,250 L950,200 L900,400 L720,350 Z" />
+                                <text x="800" y="300" class="font-bold text-white text-xl pointer-events-none">AUSTRALIS</text>
+                            </svg>
+                            
+                            <!-- Info Panel Overlay -->
+                            <div id="map-info" class="absolute bottom-4 right-4 glass-panel p-4 rounded-lg shadow-lg w-64 hidden transform transition duration-300">
+                                <h4 id="info-title" class="font-bold text-eco-900 border-b pb-1 mb-2">Wilayah</h4>
+                                <p id="info-desc" class="text-sm text-gray-700">Pilih wilayah pada peta.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-8">
+                            <button onclick="navigate('simulation', 'climate')" class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow text-sm">
+                                <i class="fa-solid fa-cloud-sun-rain mr-2"></i> Iklim & Bioma
+                            </button>
+                            <button onclick="navigate('simulation', 'deforestation')" class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow text-sm ml-2">
+                                <i class="fa-solid fa-tree-city mr-2"></i> Dampak Deforestasi
+                            </button>
+                        </div>
+                    </div>
+                `;
+            } else if (type === 'climate') {
+                // Biome Climate Simulator
+                simHtml = `
+                    <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-100">
+                        <h3 class="text-2xl font-bold text-eco-800 mb-2">Simulator Iklim & Bioma</h3>
+                        <p class="text-gray-600 mb-6">Ubah suhu dan curah hujan untuk melihat ekosistem/bioma apa yang terbentuk.</p>
+                        
+                        <div class="flex flex-col md:flex-row gap-8">
+                            <div class="w-full md:w-1/3 space-y-6 bg-slate-50 p-6 rounded-lg border border-slate-200">
+                                <div>
+                                    <label class="block text-sm font-bold text-gray-700 mb-2">Suhu Rata-rata (<span id="temp-val">25</span>°C)</label>
+                                    <input type="range" id="sim-temp" min="-10" max="35" value="25" class="w-full accent-eco-600 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                                    <div class="flex justify-between text-xs text-gray-500 mt-1"><span>-10°C (Dingin)</span><span>35°C (Panas)</span></div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-bold text-gray-700 mb-2">Curah Hujan (<span id="rain-val">2500</span> mm/thn)</label>
+                                    <input type="range" id="sim-rain" min="0" max="4000" value="2500" step="100" class="w-full accent-blue-600 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                                    <div class="flex justify-between text-xs text-gray-500 mt-1"><span>Kering</span><span>Basah</span></div>
+                                </div>
+                            </div>
+                            
+                            <div class="w-full md:w-2/3 flex flex-col items-center justify-center bg-gray-900 rounded-lg overflow-hidden relative min-h-[300px]" id="biome-result-container">
+                                <img id="biome-img" src="https://placehold.co/800x400/166534/ffffff?text=Hutan+Hujan+Tropis" class="absolute inset-0 w-full h-full object-cover opacity-80 transition duration-500">
+                                <div class="relative z-10 text-center glass-panel p-6 m-4 w-3/4">
+                                    <h4 id="biome-name" class="text-2xl font-bold text-slate-800">Hutan Hujan Tropis</h4>
+                                    <p id="biome-desc" class="text-sm mt-2 text-slate-700 font-medium">Suhu panas dan curah hujan tinggi sepanjang tahun mendukung biodiversitas maksimal.</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-8">
+                            <button onclick="navigate('simulation', 'indonesia-map')" class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow text-sm">
+                                <i class="fa-solid fa-map-location-dot mr-2"></i> Zona Indonesia
+                            </button>
+                            <button onclick="navigate('simulation', 'deforestation')" class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow text-sm ml-2">
+                                <i class="fa-solid fa-tree-city mr-2"></i> Dampak Deforestasi
+                            </button>
+                        </div>
+                    </div>
+                `;
+            } else if (type === 'deforestation') {
+                // Deforestation Impact Simulator
+                simHtml = `
+                    <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-100">
+                        <h3 class="text-2xl font-bold text-red-800 mb-2">Simulasi Dampak Kerusakan Habitat</h3>
+                        <p class="text-gray-600 mb-6">Geser slider tingkat deforestasi untuk melihat dampaknya terhadap kondisi hutan dan populasi satwa endemik (Misal: Orangutan Kalimantan).</p>
+                        
+                        <div class="flex flex-col md:flex-row gap-8">
+                            <div class="w-full md:w-1/3 space-y-6 bg-red-50 p-6 rounded-lg border border-red-200">
+                                <div>
+                                    <label class="block text-sm font-bold text-gray-700 mb-2">Tingkat Deforestasi Lahan: <span id="def-val">0</span>%</label>
+                                    <input type="range" id="sim-def" min="0" max="100" value="0" class="w-full accent-red-600 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                                </div>
+                                <div class="bg-white p-4 rounded shadow text-sm border-l-4 border-red-500">
+                                    <p class="mb-2"><strong>Status Ekosistem:</strong> <span id="def-status" class="text-green-600 font-bold">Utuh / Seimbang</span></p>
+                                    <p><strong>Daya Dukung Satwa:</strong> <span id="def-pop" class="font-bold text-xl text-green-600">100%</span></p>
+                                </div>
+                            </div>
+                            
+                            <div class="w-full md:w-2/3 flex items-center justify-center bg-stone-300 rounded-lg overflow-hidden relative min-h-[300px]">
+                                <!-- Green Forest Layer shrinking from left to right -->
+                                <div id="def-visual" class="absolute left-0 top-0 bottom-0 bg-green-500 transition-all duration-300 ease-linear" style="width: 100%"></div>
+                                
+                                <div class="relative z-10 text-center glass-panel p-6 m-4 w-3/4 shadow-lg rounded-xl">
+                                    <i id="def-icon" class="fa-solid fa-tree text-7xl text-green-700 transition-colors duration-300 mb-2"></i>
+                                    <h4 id="def-desc" class="text-2xl font-bold text-slate-800">Hutan Lebat Terjaga</h4>
+                                    <p id="def-info" class="text-sm mt-2 text-slate-700 font-medium">Satwa memiliki ruang jelajah dan sumber pakan yang luas.</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-8">
+                            <button onclick="navigate('simulation', 'indonesia-map')" class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow text-sm">
+                                <i class="fa-solid fa-map-location-dot mr-2"></i> Zona Indonesia
+                            </button>
+                            <button onclick="navigate('simulation', 'climate')" class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow text-sm ml-2">
+                                <i class="fa-solid fa-cloud-sun-rain mr-2"></i> Iklim & Bioma
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+
+            return `
+                <div class="max-w-6xl mx-auto px-4 py-8 w-full">
+                    <h2 class="text-3xl font-bold text-eco-900 mb-6"><i class="fa-solid fa-flask mr-2"></i> Simulasi Pembelajaran</h2>
+                    ${simHtml}
+                </div>
+            `;
+        }
+
+        function bindSimulationEvents() {
+            // Indonesia Map Logic
+            const asiatis = document.getElementById('reg-asiatis');
+            const peralihan = document.getElementById('reg-peralihan');
+            const australis = document.getElementById('reg-australis');
+            const infoPanel = document.getElementById('map-info');
+            const infoTitle = document.getElementById('info-title');
+            const infoDesc = document.getElementById('info-desc');
+
+            const mapData = {
+                asiatis: { title: "Zona Asiatis (Barat)", desc: "Fauna mamalia besar (Gajah, Harimau, Badak, Orangutan). Flora dominan Hutan Hujan Tropis (Meranti, Rafflesia)." },
+                peralihan: { title: "Zona Peralihan (Tengah)", desc: "Fauna endemik (Komodo, Anoa, Babirusa). Flora Hutan Musim & Sabana (Cendana, Eboni)." },
+                australis: { title: "Zona Australis (Timur)", desc: "Mamalia berkantung & burung eksotis (Kasuari, Cenderawasih, Kanguru Pohon). Flora khas Hutan Hujan & Pegunungan (Matoa)." }
+            };
+
+            const showInfo = (key) => {
+                if(!infoPanel) return;
+                infoPanel.classList.remove('hidden');
+                infoTitle.innerText = mapData[key].title;
+                infoDesc.innerText = mapData[key].desc;
+            };
+
+            if(asiatis) asiatis.addEventListener('mouseover', () => showInfo('asiatis'));
+            if(peralihan) peralihan.addEventListener('mouseover', () => showInfo('peralihan'));
+            if(australis) australis.addEventListener('mouseover', () => showInfo('australis'));
+
+            // Climate Simulator Logic
+            const simTemp = document.getElementById('sim-temp');
+            const simRain = document.getElementById('sim-rain');
+            const tempVal = document.getElementById('temp-val');
+            const rainVal = document.getElementById('rain-val');
+            const biomeName = document.getElementById('biome-name');
+            const biomeDesc = document.getElementById('biome-desc');
+            const biomeImg = document.getElementById('biome-img');
+
+            if(simTemp && simRain) {
+                const updateBiome = () => {
+                    const t = parseInt(simTemp.value);
+                    const r = parseInt(simRain.value);
+                    tempVal.innerText = t;
+                    rainVal.innerText = r;
+
+                    let name = "", desc = "", img = "";
+
+                    if (r < 250) {
+                        if (t > 15) { name = "Gurun Panas"; desc = "Sangat kering, vegetasi xerofit (Kaktus). Fauna nokturnal."; img = "d97706/ffffff?text=Gurun"; }
+                        else { name = "Tundra / Gurun Dingin"; desc = "Sangat dingin dan kering. Permafrost, hanya lumut."; img = "cbd5e1/1e293b?text=Tundra"; }
+                    } else if (r >= 250 && r < 1000) {
+                        if (t > 15) { name = "Sabana / Padang Rumput Tropis"; desc = "Rumput dengan pohon tersebar. Zebra, Singa."; img = "84cc16/ffffff?text=Sabana"; }
+                        else { name = "Stepa / Padang Rumput Iklim Sedang"; desc = "Padang rumput luas tanpa pohon. Bison, Kuda liar."; img = "a3e635/1e293b?text=Stepa"; }
+                    } else if (r >= 1000 && r < 2000) {
+                        if (t > 15) { name = "Hutan Musim Tropis"; desc = "Pohon meranggas saat kemarau (Jati)."; img = "65a30d/ffffff?text=Hutan+Musim"; }
+                        else if (t > 0) { name = "Hutan Gugur Iklim Sedang"; desc = "Daun berguguran di musim gugur. Empat musim."; img = "ea580c/ffffff?text=Hutan+Gugur"; }
+                        else { name = "Taiga (Hutan Konifer)"; desc = "Hutan pinus berdaun jarum. Musim dingin panjang."; img = "14532d/ffffff?text=Taiga"; }
+                    } else {
+                        if (t > 18) { name = "Hutan Hujan Tropis"; desc = "Curah hujan sangat tinggi, selalu hijau, kanopi rapat. Biodiversitas sangat tinggi."; img = "166534/ffffff?text=Hutan+Hujan+Tropis"; }
+                        else { name = "Hutan Hujan Sedang (Temperate)"; desc = "Hujan lebat tapi iklim lebih sejuk. Pohon besar berlumut."; img = "15803d/ffffff?text=Hutan+Hujan+Sedang"; }
+                    }
+
+                    biomeName.innerText = name;
+                    biomeDesc.innerText = desc;
+                    biomeImg.src = `https://placehold.co/800x400/${img}`;
+                };
+
+                simTemp.addEventListener('input', updateBiome);
+                simRain.addEventListener('input', updateBiome);
+            }
+            
+            // Deforestation Simulator Logic
+            const simDef = document.getElementById('sim-def');
+            const defVal = document.getElementById('def-val');
+            const defStatus = document.getElementById('def-status');
+            const defPop = document.getElementById('def-pop');
+            const defVisual = document.getElementById('def-visual');
+            const defIcon = document.getElementById('def-icon');
+            const defDesc = document.getElementById('def-desc');
+            const defInfo = document.getElementById('def-info');
+
+            if(simDef) {
+                simDef.addEventListener('input', (e) => {
+                    const val = parseInt(e.target.value);
+                    defVal.innerText = val;
+                    
+                    // Simple non-linear calculation for population drop
+                    let pop = 100 - (val * 1.3);
+                    if(pop < 0) pop = 0;
+                    
+                    defPop.innerText = Math.round(pop) + '%';
+                    defVisual.style.width = (100 - val) + '%';
+                    
+                    if(val >= 80) {
+                        defVisual.style.backgroundColor = '#b91c1c'; // Red
+                        defStatus.innerText = 'Kritis / Punah Lokal';
+                        defStatus.className = 'text-red-700 font-bold';
+                        defPop.className = 'font-bold text-xl text-red-700';
+                        defIcon.className = 'fa-solid fa-skull-crossbones text-7xl text-red-700';
+                        defDesc.innerText = 'Habitat Hancur';
+                        defInfo.innerText = 'Tidak ada ruang jelajah tersisa. Populasi satwa endemik musnah atau terpaksa masuk ke permukiman.';
+                    } else if(val >= 40) {
+                        defVisual.style.backgroundColor = '#eab308'; // Yellow
+                        defStatus.innerText = 'Terancam / Terfragmentasi';
+                        defStatus.className = 'text-yellow-600 font-bold';
+                        defPop.className = 'font-bold text-xl text-yellow-600';
+                        defIcon.className = 'fa-solid fa-triangle-exclamation text-7xl text-yellow-600';
+                        defDesc.innerText = 'Hutan Terfragmentasi';
+                        defInfo.innerText = 'Habitat terpecah belah. Jalur migrasi terputus dan ketersediaan pakan mulai menipis drastis.';
+                    } else {
+                        defVisual.style.backgroundColor = '#22c55e'; // Green
+                        defStatus.innerText = 'Utuh / Seimbang';
+                        defStatus.className = 'text-green-600 font-bold';
+                        defPop.className = 'font-bold text-xl text-green-600';
+                        defIcon.className = 'fa-solid fa-tree text-7xl text-green-700';
+                        defDesc.innerText = 'Hutan Lebat Terjaga';
+                        defInfo.innerText = 'Satwa memiliki ruang jelajah dan sumber pakan yang luas.';
+                    }
+                });
+            }
+        }
+
+        function renderEvaluation() {
+            // State for evaluation
+            window.evalIndex = 0;
+            window.evalScore = 0;
+            window.evalAnswers = [];
+            const totalEval = evaluationQuestions.length;
+
+            let btnHtml = evaluationQuestions.map((q, i) => `
+                <div class="hidden" id="eval-q-${i}">
+                    <div class="mb-4">
+                        <span class="bg-red-100 text-red-800 text-xs font-bold px-2 py-1 rounded uppercase tracking-wide">Evaluasi Akhir : Soal ${i+1}/${totalEval}</span>
+                    </div>
+                    <h4 class="text-xl font-bold text-gray-800 mb-6">${q.q}</h4>
+                    <div class="space-y-3">
+                        ${q.options.map((opt, optIdx) => `
+                            <button onclick="window.answerEval(${i}, ${optIdx})" class="w-full text-left p-4 border border-gray-300 rounded-lg hover:bg-red-50 hover:border-red-500 transition duration-200">
+                                ${String.fromCharCode(65 + optIdx)}. ${opt}
+                            </button>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+
+            return `
+                <div class="max-w-3xl mx-auto px-4 py-12 w-full">
+                    <div class="bg-white rounded-xl shadow-xl p-8 border-t-8 border-red-600 relative min-h-[400px]">
+                        <div id="eval-intro" class="text-center">
+                            <i class="fa-solid fa-file-signature text-6xl text-red-500 mb-4"></i>
+                            <h2 class="text-3xl font-bold mb-4">Evaluasi Pembelajaran</h2>
+                            <p class="text-gray-600 mb-8">Uji pemahaman mendalam kamu mengenai Biosfer dan Keanekaragaman Hayati. Terdapat ${totalEval} soal pilihan ganda.</p>
+                            <button onclick="window.startEval()" class="bg-red-600 text-white px-8 py-3 rounded-full font-bold shadow-lg hover:bg-red-700 transition">
+                                Mulai Evaluasi
+                            </button>
+                        </div>
+                        
+                        <div id="eval-questions-container">
+                            ${btnHtml}
+                        </div>
+                        
+                        <div id="eval-result" class="hidden text-center">
+                            <!-- Injected by JS -->
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        window.startEval = function() {
+            document.getElementById('eval-intro').classList.add('hidden');
+            document.getElementById('eval-q-0').classList.remove('hidden');
+        };
+
+        window.answerEval = function(qIndex, selectedIdx) {
+            window.evalAnswers[qIndex] = selectedIdx;
+            
+            // Check if correct
+            if(selectedIdx === evaluationQuestions[qIndex].a) {
+                window.evalScore++;
+            }
+
+            document.getElementById(`eval-q-${qIndex}`).classList.add('hidden');
+            
+            if(qIndex + 1 < evaluationQuestions.length) {
+                document.getElementById(`eval-q-${qIndex + 1}`).classList.remove('hidden');
+            } else {
+                window.finishEval();
+            }
+        };
+
+        window.finishEval = function() {
+            const total = evaluationQuestions.length;
+            const scorePercent = (window.evalScore / total) * 100;
+            const resContainer = document.getElementById('eval-result');
+            resContainer.classList.remove('hidden');
+            
+            // Simpan skor evaluasi
+            state.evalScore = window.evalScore;
+            safeSetStorage('biodiv_eval_score', state.evalScore);
+
+            let feedback = "";
+            if (scorePercent >= 80) feedback = "Luar biasa! Pemahaman konsep geografismu sangat baik.";
+            else if (scorePercent >= 60) feedback = "Cukup baik, namun masih perlu meninjau ulang materi spesifik.";
+            else feedback = "Jangan putus asa! Mari pelajari kembali modul-modul sebelumnya.";
+
+            resContainer.innerHTML = `
+                <div class="text-6xl mb-4 ${scorePercent >= 60 ? 'text-eco-500' : 'text-amber-500'}">
+                    <i class="fa-solid ${scorePercent >= 80 ? 'fa-medal' : 'fa-star-half-stroke'}"></i>
+                </div>
+                <h3 class="text-3xl font-bold mb-2">Nilai Akhir: ${scorePercent}</h3>
+                <p class="text-gray-600 mb-6 font-medium">${window.evalScore} Benar dari ${total} Soal</p>
+                <div class="bg-gray-100 p-4 rounded-lg mb-6 text-left">
+                    <p class="text-sm text-gray-800 italic">"${feedback}"</p>
+                </div>
+                <button onclick="navigate('dashboard')" class="bg-slate-800 text-white px-6 py-2 rounded-full font-bold hover:bg-slate-700 transition">Kembali ke Dashboard</button>
+            `;
+
+            if(scorePercent >= 60) {
+                updateScore(100); // Bonus score
+            }
+        };
+
+        function renderRecapPage() {
+            // Hitung total skor sementara dari perangkat ini
+            let totalBenarLokal = state.evalScore || 0;
+            for(let i=1; i<=9; i++) totalBenarLokal += (state.moduleScores[i] || 0);
+            let skorMaksimum100 = Math.round((totalBenarLokal / 65) * 100);
+
+            return `
+                <div class="max-w-7xl mx-auto px-4 py-8 w-full">
+                    <h2 class="text-3xl font-bold text-eco-900 mb-2"><i class="fa-solid fa-table-list mr-2"></i> Sinkronisasi & Rekap Nilai</h2>
+                    <p class="text-gray-600 mb-8">Papan peringkat dan rekap nilai yang terhubung langsung ke Server Kelas (Cloud).</p>
+                    
+                    <div class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden mb-8">
+                        <div class="bg-eco-600 p-4 text-white">
+                            <h3 class="font-bold text-lg">Kirim Nilai Kamu</h3>
+                        </div>
+                        <div class="p-6 flex flex-col md:flex-row items-center gap-6">
+                            <div class="flex-1">
+                                <p class="text-sm text-gray-500 mb-1">Skor Tertinggimu Saat Ini (Skala 100):</p>
+                                <div class="text-4xl font-extrabold text-eco-600">${skorMaksimum100} <span class="text-lg text-gray-400">/ 100</span></div>
+                                <p class="text-xs text-gray-400 mt-2">Dari ${totalBenarLokal} jawaban benar dari total 65 pertanyaan.</p>
+                            </div>
+                            <div class="flex-1 w-full">
+                                <input type="text" id="student-name-input" placeholder="Masukkan Nama Lengkapmu..." class="w-full border-2 border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:border-eco-500 mb-2">
+                                <button onclick="window.submitToCloud()" class="w-full bg-ocean-600 hover:bg-ocean-700 text-white font-bold py-3 rounded-lg shadow transition">
+                                    <i class="fa-solid fa-cloud-arrow-up mr-2"></i> Sinkronkan ke Tabel Rekap
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+                        <div class="bg-slate-800 p-4 text-white flex flex-wrap justify-between items-center gap-3">
+                            <div>
+                                <h3 class="font-bold text-lg"><i class="fa-solid fa-users mr-2"></i> Tabel Rekap Kelas (Live Sheet)</h3>
+                                <span class="text-xs text-slate-300">Tersinkronisasi otomatis secara real-time</span>
+                            </div>
+                            <div class="flex gap-2">
+                                <button onclick="window.toggleTeacherMode()" class="text-xs bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold px-3 py-2 rounded shadow transition">
+                                    <i class="fa-solid fa-user-tie mr-1"></i> <span id="teacher-mode-label">Mode Guru (Edit)</span>
+                                </button>
+                                <button onclick="window.exportToCSV()" class="text-xs bg-green-600 hover:bg-green-500 text-white font-bold px-3 py-2 rounded shadow transition">
+                                    <i class="fa-solid fa-file-excel mr-1"></i> Unduh Excel / Google Sheets
+                                </button>
+                            </div>
+                        </div>
+                        <div class="overflow-x-auto p-4" id="recap-table-container">
+                            <div class="text-center text-gray-500 py-8"><i class="fa-solid fa-spinner fa-spin text-2xl mb-2"></i><br>Memuat data dari server...</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        window.renderRecapTable = function() {
+            const container = document.getElementById('recap-table-container');
+            const labelBtn = document.getElementById('teacher-mode-label');
+            if(labelBtn) labelBtn.innerText = window.isTeacherMode ? 'Keluar Mode Guru' : 'Mode Guru (Edit)';
+            if(!container) return;
+
+            if(window.allStudentsScores.length === 0) {
+                container.innerHTML = `<div class="text-center text-gray-500 py-8">Belum ada data nilai siswa yang disinkronkan.</div>`;
+                return;
+            }
+
+            let rows = window.allStudentsScores.map((s, index) => {
+                let modCells = '';
+                for(let i=1; i<=9; i++) {
+                    modCells += `<td class="py-2 px-3 border-b text-center text-sm">${s.modul && s.modul[`M${i}`] !== undefined ? s.modul[`M${i}`] : '-'}</td>`;
+                }
+                
+                let actionCell = window.isTeacherMode ? `
+                    <td class="py-2 px-3 border-b text-center">
+                        <button onclick="window.editStudentScore('${s.id}', '${s.nama.replace(/'/g, "\\'")}', ${s.totalSkor})" class="bg-blue-100 text-blue-700 hover:bg-blue-600 hover:text-white px-2 py-1 rounded text-xs font-bold transition">
+                            <i class="fa-solid fa-pen"></i> Edit
+                        </button>
+                    </td>
+                ` : '';
+
+                return `
+                    <tr class="hover:bg-gray-50 transition">
+                        <td class="py-2 px-3 border-b text-center font-bold">${index + 1}</td>
+                        <td class="py-2 px-3 border-b font-medium">${s.nama}</td>
+                        <td class="py-2 px-3 border-b text-center font-bold text-eco-600 bg-eco-50">${s.totalSkor}</td>
+                        ${modCells}
+                        <td class="py-2 px-3 border-b text-center font-bold text-ocean-600">${s.evaluasi || '-'}</td>
+                        <td class="py-2 px-3 border-b text-center text-xs text-gray-400">${new Date(s.timestamp).toLocaleTimeString()}</td>
+                        ${actionCell}
+                    </tr>
+                `;
+            }).join('');
+
+            container.innerHTML = `
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-gray-100 text-gray-700 text-sm">
+                            <th class="py-2 px-3 border-b text-center">Rank</th>
+                            <th class="py-2 px-3 border-b">Nama Siswa</th>
+                            <th class="py-2 px-3 border-b text-center bg-eco-100">Nilai Akhir (100)</th>
+                            <th class="py-2 px-3 border-b text-center" colspan="9">Skor Modul (Max 5)</th>
+                            <th class="py-2 px-3 border-b text-center">Evaluasi (Max 20)</th>
+                            <th class="py-2 px-3 border-b text-center">Waktu Sync</th>
+                            ${window.isTeacherMode ? '<th class="py-2 px-3 border-b text-center bg-amber-100">Aksi Guru</th>' : ''}
+                        </tr>
+                        <tr class="bg-gray-50 text-gray-500 text-xs text-center">
+                            <th></th><th></th><th></th>
+                            <th>M1</th><th>M2</th><th>M3</th><th>M4</th><th>M5</th><th>M6</th><th>M7</th><th>M8</th><th>M9</th>
+                            <th></th><th></th>
+                            ${window.isTeacherMode ? '<th></th>' : ''}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${rows}
+                    </tbody>
+                </table>
+            `;
+        }
+
+        function renderProject() {
+            return `
+                <div class="max-w-4xl mx-auto px-4 py-12 w-full">
+                    <div class="bg-white rounded-xl shadow-xl overflow-hidden">
+                        <div class="bg-ocean-600 p-8 text-white text-center">
+                            <h2 class="text-3xl font-bold mb-2">Projek Kolaboratif</h2>
+                            <p class="text-ocean-100 uppercase tracking-wide">Ekspedisi Keanekaragaman Hayati Lingkungan Sekitar</p>
+                        </div>
+                        <div class="p-8 text-gray-800">
+                            <h3 class="text-xl font-bold mb-4 text-ocean-800"><i class="fa-solid fa-list-check mr-2"></i>Tugas Kamu (Individu / Kelompok):</h3>
+                            <ol class="list-decimal pl-6 space-y-3 mb-6 bg-ocean-50 p-4 rounded-lg border border-ocean-100">
+                                <li><strong>Observasi:</strong> Identifikasi minimal 5 jenis flora dan 3 fauna di lingkungan sekitar rumah atau sekolahmu.</li>
+                                <li><strong>Dokumentasi:</strong> Ambil foto langsung objek tersebut.</li>
+                                <li><strong>Analisis:</strong> Cari nama ilmiahnya, klasifikasikan jenisnya, dan catat kondisi habitatnya.</li>
+                                <li><strong>Evaluasi Ancaman:</strong> Analisis apakah ada ancaman terhadap mereka (misal: sampah, polusi, penebangan).</li>
+                                <li><strong>Karya Digital:</strong> Buat infografis sederhana berisi temuanmu dan solusi pelestariannya.</li>
+                            </ol>
+                            
+                            <div class="bg-white border-2 border-dashed border-gray-300 rounded-xl p-6 text-center">
+                                <i class="fa-solid fa-cloud-arrow-up text-4xl text-gray-400 mb-3"></i>
+                                <h4 class="font-bold text-gray-700">Kumpulkan Hasil Projek</h4>
+                                <p class="text-sm text-gray-500 mb-4">Serahkan file infografis (PDF/JPG) atau link ke guru Geografi-mu.</p>
+                                <button onclick="Swal.fire('Fitur Pengumpulan','Dalam versi simulasi ini, karya diserahkan secara manual ke guru di kelas. Terus berkarya!','info')" class="bg-ocean-500 hover:bg-ocean-600 text-white font-bold py-2 px-6 rounded-full transition">Upload Karya</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Mobile Menu Toggle
+        document.getElementById('mobile-menu-btn').addEventListener('click', () => {
+            document.getElementById('mobile-menu').classList.toggle('hidden');
+        });
+
+        // Initialize Score Display, Load Home & Connect Firebase
+        document.getElementById('nav-score').innerText = state.score + " Poin";
+        window.navigate('home');
+        initFirebase();
+
+    </script>
+</body>
+</html>
