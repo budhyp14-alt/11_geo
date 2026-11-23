@@ -66,12 +66,15 @@
                     <i class="fa-solid fa-leaf text-2xl text-eco-500 mr-2"></i>
                     <span class="font-bold text-xl tracking-wide">BIODIVERSITY <span class="text-eco-500">EXPLORER</span></span>
                 </div>
-                <div class="hidden md:flex items-center space-x-4">
-                    <button onclick="navigate('home')" class="hover:text-eco-500 px-3 py-2 rounded-md font-medium transition"><i class="fa-solid fa-house mr-1"></i> Beranda</button>
-                    <button onclick="navigate('dashboard')" class="hover:text-eco-500 px-3 py-2 rounded-md font-medium transition"><i class="fa-solid fa-book-open mr-1"></i> Modul</button>
-                    <button onclick="navigate('gallery')" class="hover:text-eco-500 px-3 py-2 rounded-md font-medium transition"><i class="fa-solid fa-images mr-1"></i> Galeri</button>
-                    <button onclick="navigate('simulation')" class="hover:text-eco-500 px-3 py-2 rounded-md font-medium transition"><i class="fa-solid fa-flask mr-1"></i> Simulasi</button>
-                    <button onclick="navigate('recap')" class="hover:text-yellow-400 px-3 py-2 rounded-md font-bold transition text-yellow-300"><i class="fa-solid fa-table-list mr-1"></i> Rekap Nilai</button>
+                <div class="hidden md:flex items-center space-x-3">
+                    <button onclick="navigate('home')" class="hover:text-eco-500 px-2.5 py-2 rounded-md font-medium transition"><i class="fa-solid fa-house mr-1"></i> Beranda</button>
+                    <button onclick="navigate('dashboard')" class="hover:text-eco-500 px-2.5 py-2 rounded-md font-medium transition"><i class="fa-solid fa-book-open mr-1"></i> Modul</button>
+                    <button onclick="navigate('gallery')" class="hover:text-eco-500 px-2.5 py-2 rounded-md font-medium transition"><i class="fa-solid fa-images mr-1"></i> Galeri</button>
+                    <button onclick="navigate('simulation')" class="hover:text-eco-500 px-2.5 py-2 rounded-md font-medium transition"><i class="fa-solid fa-flask mr-1"></i> Simulasi</button>
+                    <button onclick="navigate('recap')" class="hover:text-yellow-400 px-2.5 py-2 rounded-md font-bold transition text-yellow-300"><i class="fa-solid fa-table-list mr-1"></i> Rekap Nilai</button>
+                    <button onclick="window.openStudentIdentityModal()" id="nav-student-btn" title="Klik untuk memilih / mengganti identitas siswa" class="flex items-center bg-ocean-600 hover:bg-ocean-500 px-3 py-1 rounded-full text-xs font-semibold transition cursor-pointer">
+                        <i class="fa-solid fa-user-graduate mr-1.5"></i> <span id="nav-student-label">Pilih Siswa</span>
+                    </button>
                     <div class="flex items-center bg-eco-900 px-3 py-1 rounded-full text-sm">
                         <i class="fa-solid fa-star text-yellow-400 mr-1"></i> <span id="nav-score">0 Poin</span>
                     </div>
@@ -91,6 +94,7 @@
             <a href="#" onclick="navigate('gallery')" class="block px-4 py-2 hover:bg-eco-600">Galeri</a>
             <a href="#" onclick="navigate('simulation')" class="block px-4 py-2 hover:bg-eco-600">Simulasi</a>
             <a href="#" onclick="navigate('recap')" class="block px-4 py-2 hover:bg-yellow-600 text-yellow-300 font-bold">Rekap Nilai</a>
+            <a href="#" onclick="window.openStudentIdentityModal()" class="block px-4 py-2 bg-ocean-700 text-white font-semibold"><i class="fa-solid fa-user-graduate mr-1"></i> <span id="mobile-student-label">Pilih Identitas Siswa</span></a>
         </div>
     </nav>
 
@@ -105,6 +109,11 @@
 
     <!-- APLIKASI LENGKAP JAVASCRIPT -->
     <script>
+        // =========================================================================
+        // KONFIGURASI GOOGLE APPS SCRIPT
+        // =========================================================================
+        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbw9MTtA38JTFD2pLV58gtR9MLQlqOoRTC3h_ANr4fd_wzUG-lEx1-a9qOlTTsrFVYPx/exec';
+
         // Helper aman untuk penyimpanan lokal agar tidak error pada iframe sandbox
         function safeGetStorage(key, fallback) {
             try {
@@ -130,152 +139,349 @@
                     const msg = typeof titleOrOpts === 'object'
                         ? `${titleOrOpts.title || ''}: ${titleOrOpts.text || ''}`
                         : `${titleOrOpts}: ${text || ''}`;
-                    console.log(msg);
+                    alert(msg);
                     return Promise.resolve({});
                 }
             };
         }
 
-        // State Global & Database Cloud (dengan fallback lokal)
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'biodiv-explorer';
-        let firebaseConfig = null;
-        try {
-            if (typeof __firebase_config !== 'undefined' && __firebase_config) {
-                firebaseConfig = typeof __firebase_config === 'string'
-                    ? JSON.parse(__firebase_config)
-                    : __firebase_config;
-            }
-        } catch (e) {
-            console.warn("Konfigurasi Firebase tidak valid, menggunakan mode lokal:", e);
-        }
-
-        let db = null;
-        let auth = null;
-        let currentUser = null;
-        let firestoreMod = null;
+        // State Global & Data Sinkronisasi Google Sheet
         window.allStudentsScores = safeGetStorage('biodiv_recap_scores', []);
+        window.studentNamesList = safeGetStorage('biodiv_student_names', []);
         window.isTeacherMode = false;
+        window.selectedClassFilter = 'ALL';
 
-        // Inisialisasi Firebase secara dinamis agar tidak memblokir fungsi navigasi utama
-        async function initFirebase() {
-            if (!firebaseConfig) return;
-            try {
-                const appMod = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js");
-                const authMod = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js");
-                firestoreMod = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js");
+        // --- STATE MANAGEMENT ---
+        let state = {
+            progress: safeGetStorage('biodiv_progress', []),
+            score: parseInt(safeGetStorage('biodiv_score', 0), 10) || 0,
+            moduleScores: safeGetStorage('biodiv_mod_scores', {}),
+            evalScore: parseInt(safeGetStorage('biodiv_eval_score', 0), 10) || 0,
+            studentName: safeGetStorage('biodiv_student_name', ''),
+            studentClass: safeGetStorage('biodiv_student_class', ''),
+            currentModule: null
+        };
 
-                const app = appMod.initializeApp(firebaseConfig);
-                db = firestoreMod.getFirestore(app);
-                auth = authMod.getAuth(app);
-
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await authMod.signInWithCustomToken(auth, __initial_auth_token);
-                } else {
-                    await authMod.signInAnonymously(auth);
-                }
-                currentUser = auth.currentUser;
-                listenToScores();
-            } catch (e) {
-                console.warn("Mode offline/lokal aktif (Cloud tidak terhubung):", e);
+        function updateStudentBadge() {
+            const navLabel = document.getElementById('nav-student-label');
+            const mobileLabel = document.getElementById('mobile-student-label');
+            if (window.isTeacherMode) {
+                if (navLabel) navLabel.innerText = 'Mode Guru';
+                if (mobileLabel) mobileLabel.innerText = 'Mode Guru (Aktif)';
+            } else if (state.studentName && state.studentClass) {
+                const text = `${state.studentName} (${state.studentClass})`;
+                if (navLabel) navLabel.innerText = text;
+                if (mobileLabel) mobileLabel.innerText = `Siswa: ${text}`;
+            } else {
+                if (navLabel) navLabel.innerText = 'Pilih Siswa';
+                if (mobileLabel) mobileLabel.innerText = 'Pilih Identitas Siswa';
             }
         }
 
-        function listenToScores() {
-            if (!currentUser || !db || !firestoreMod) return;
-            const scoresRef = firestoreMod.collection(db, 'artifacts', appId, 'public', 'data', 'student_scores');
-            firestoreMod.onSnapshot(scoresRef, (snapshot) => {
-                window.allStudentsScores = [];
-                snapshot.forEach((docSnap) => {
-                    window.allStudentsScores.push({ id: docSnap.id, ...docSnap.data() });
-                });
+        function isWebAppConfigured() {
+            return WEB_APP_URL && WEB_APP_URL.startsWith('http');
+        }
+
+        // =========================================================================
+        // SINKRONISASI GOOGLE SHEET (FRONTEND)
+        // =========================================================================
+
+        // 1. Menarik semua nilai & daftar nama siswa dari Google Sheet ke Web
+        async function muatRekapDariGoogleSheet() {
+            if (!isWebAppConfigured()) {
+                if (window.currentScreen === 'recap') window.renderRecapTable();
+                return;
+            }
+            try {
+                const response = await fetch(WEB_APP_URL);
+                const data = await response.json();
+
+                if (Array.isArray(data)) {
+                    window.allStudentsScores = data.map((item, idx) => ({
+                        id: item.id || ('gs_' + idx),
+                        nama: item.nama || '',
+                        kelas: item.kelas || '-',
+                        totalSkor: Number(item.totalSkor ?? item.nilaiAkhir) || 0,
+                        modul: item.modul || {
+                            M1: item.m1 ?? 0, M2: item.m2 ?? 0, M3: item.m3 ?? 0,
+                            M4: item.m4 ?? 0, M5: item.m5 ?? 0, M6: item.m6 ?? 0,
+                            M7: item.m7 ?? 0, M8: item.m8 ?? 0, M9: item.m9 ?? 0
+                        },
+                        evaluasi: item.evaluasi ?? '-',
+                        waktuSync: item.waktuSync || '-'
+                    }));
+                    window.studentNamesList = [...new Set(window.allStudentsScores.map(s => s.nama).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'id'));
+                } else if (data && typeof data === 'object') {
+                    window.allStudentsScores = (data.rekap || []).map((item, idx) => ({
+                        id: item.id || ('gs_' + idx),
+                        nama: item.nama || '',
+                        kelas: item.kelas || '-',
+                        totalSkor: Number(item.totalSkor ?? item.nilaiAkhir) || 0,
+                        modul: item.modul || {
+                            M1: item.m1 ?? 0, M2: item.m2 ?? 0, M3: item.m3 ?? 0,
+                            M4: item.m4 ?? 0, M5: item.m5 ?? 0, M6: item.m6 ?? 0,
+                            M7: item.m7 ?? 0, M8: item.m8 ?? 0, M9: item.m9 ?? 0
+                        },
+                        evaluasi: item.evaluasi ?? '-',
+                        waktuSync: item.waktuSync || '-'
+                    }));
+                    if (Array.isArray(data.daftarNama)) {
+                        window.studentNamesList = data.daftarNama;
+                    } else {
+                        window.studentNamesList = [...new Set(window.allStudentsScores.map(s => s.nama).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'id'));
+                    }
+                }
+
                 window.allStudentsScores.sort((a, b) => b.totalSkor - a.totalSkor);
                 safeSetStorage('biodiv_recap_scores', window.allStudentsScores);
+                safeSetStorage('biodiv_student_names', window.studentNamesList);
+
                 if (window.currentScreen === 'recap') {
                     window.renderRecapTable();
+                    populateRecapNameDropdown();
                 }
-            }, (error) => console.error("Sync error:", error));
+            } catch (error) {
+                console.error('Gagal memuat rekap kelas dari Google Sheet:', error);
+                if (window.currentScreen === 'recap') window.renderRecapTable();
+            }
+        }
+
+        // Helper untuk mengisi ulang dropdown nama pada halaman Rekap Nilai
+        function populateRecapNameDropdown() {
+            const nameSelect = document.getElementById('student-name-input');
+            if (!nameSelect) return;
+            const currentVal = state.studentName || nameSelect.value;
+            let optionsHtml = `<option value="">-- Pilih Nama Siswa (dari Google Sheet) --</option>`;
+            window.studentNamesList.forEach(nama => {
+                const selected = (nama === currentVal) ? 'selected' : '';
+                optionsHtml += `<option value="${nama.replace(/"/g, '&quot;')}" ${selected}>${nama}</option>`;
+            });
+            nameSelect.innerHTML = optionsHtml;
+        }
+
+        // 2. Mengirim data nilai siswa ke Google Sheet saat tombol "Sinkronkan ke Tabel Rekap" diklik
+        async function kirimNilaiKeGoogleSheet(payload) {
+            const response = await fetch(WEB_APP_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify(payload)
+            });
+            return await response.json();
         }
 
         window.submitToCloud = async function() {
-            const nameInput = document.getElementById('student-name-input');
-            const studentName = nameInput ? nameInput.value : '';
-            if (!studentName.trim()) {
-                Swal.fire('Oops', 'Mohon masukkan nama kamu terlebih dahulu!', 'warning');
+            const nameSelect = document.getElementById('student-name-input');
+            const classSelect = document.getElementById('student-class-input');
+            const studentName = nameSelect ? nameSelect.value.trim() : state.studentName;
+            const studentClass = classSelect ? classSelect.value.trim() : state.studentClass;
+
+            // Jika Mode Guru aktif, langsung sinkronkan Tabel Rekap tanpa wajib mengisi nama dan kelas
+            if (window.isTeacherMode && (!studentName || !studentClass)) {
+                Swal.fire({
+                    title: 'Menyinkronkan...',
+                    text: 'Menyinkronkan data Tabel Rekap dengan Google Sheet...',
+                    allowOutsideClick: false,
+                    didOpen: () => Swal.showLoading()
+                });
+
+                try {
+                    await muatRekapDariGoogleSheet();
+                    Swal.fire('Tersinkron!', 'Tabel Rekap berhasil disinkronkan dengan Google Sheet.', 'success');
+                } catch (error) {
+                    console.error('Gagal menyinkronkan rekap:', error);
+                    Swal.fire('Gagal Terhubung', 'Tidak dapat terhubung ke server Google Sheet. Periksa koneksi internet Anda.', 'error');
+                }
                 return;
             }
 
+            if (!studentName) {
+                Swal.fire('Nama Belum Dipilih', 'Mohon pilih Nama Siswa dari daftar terlebih dahulu!', 'warning');
+                return;
+            }
+            if (!studentClass) {
+                Swal.fire('Kelas Belum Dipilih', 'Mohon pilih Kelas (KELAS X, KELAS XI, atau KELAS XII) terlebih dahulu!', 'warning');
+                return;
+            }
+
+            state.studentName = studentName;
+            state.studentClass = studentClass;
+            safeSetStorage('biodiv_student_name', state.studentName);
+            safeSetStorage('biodiv_student_class', state.studentClass);
+            updateStudentBadge();
+
             const totalPertanyaan = 65; // (9 modul x 5 soal) + 20 soal evaluasi
             let totalBenar = state.evalScore || 0;
-            let detailModul = {};
-
             for (let i = 1; i <= 9; i++) {
-                const s = state.moduleScores[i] || 0;
-                totalBenar += s;
-                detailModul[`M${i}`] = s;
+                totalBenar += (state.moduleScores[i] || 0);
             }
-
             const skor100 = Math.round((totalBenar / totalPertanyaan) * 100);
-            const recordId = currentUser ? currentUser.uid : ('local_' + studentName.trim().toLowerCase().replace(/\s+/g, '_'));
 
-            const scoreData = {
-                nama: studentName.trim(),
-                totalBenar: totalBenar,
-                totalSkor: skor100,
-                modul: detailModul,
-                evaluasi: state.evalScore || 0,
-                timestamp: new Date().toISOString()
+            const payload = {
+                action: 'submit',
+                nama: studentName,
+                kelas: studentClass,
+                nilaiAkhir: skor100,
+                m1: state.moduleScores[1] || 0,
+                m2: state.moduleScores[2] || 0,
+                m3: state.moduleScores[3] || 0,
+                m4: state.moduleScores[4] || 0,
+                m5: state.moduleScores[5] || 0,
+                m6: state.moduleScores[6] || 0,
+                m7: state.moduleScores[7] || 0,
+                m8: state.moduleScores[8] || 0,
+                m9: state.moduleScores[9] || 0,
+                evaluasi: state.evalScore || 0
             };
 
-            // Jika Cloud aktif, kirim ke Firestore
-            if (currentUser && db && firestoreMod) {
-                try {
-                    const docRef = firestoreMod.doc(db, 'artifacts', appId, 'public', 'data', 'student_scores', recordId);
-                    await firestoreMod.setDoc(docRef, scoreData);
-                    Swal.fire('Terkirim!', 'Nilaimu berhasil disinkronkan ke Tabel Rekap Kelas.', 'success');
-                    return;
-                } catch (e) {
-                    console.error("Gagal kirim ke cloud, beralih ke penyimpanan lokal:", e);
-                }
-            }
+            Swal.fire({
+                title: 'Menyinkronkan...',
+                text: 'Mengirim nilai ke Google Sheet kelas...',
+                allowOutsideClick: false,
+                didOpen: () => Swal.showLoading()
+            });
 
-            // Fallback penyimpanan lokal jika cloud tidak terhubung
-            const existingIdx = window.allStudentsScores.findIndex(item => item.id === recordId);
-            if (existingIdx >= 0) {
-                window.allStudentsScores[existingIdx] = { id: recordId, ...scoreData };
-            } else {
-                window.allStudentsScores.push({ id: recordId, ...scoreData });
+            try {
+                const hasil = await kirimNilaiKeGoogleSheet(payload);
+                if (!hasil) return;
+
+                if (hasil.status === 'success') {
+                    await muatRekapDariGoogleSheet();
+                    Swal.fire('Tersinkron!', `Nilai ${studentName} (${studentClass}) berhasil dikirim dan disinkronkan dengan Google Sheet.`, 'success');
+                } else {
+                    Swal.fire('Gagal', hasil.message || 'Terjadi kesalahan saat menyimpan ke Google Sheet.', 'error');
+                }
+            } catch (error) {
+                console.error('Gagal mengirim nilai:', error);
+                Swal.fire('Gagal Terhubung', 'Tidak dapat terhubung ke server Google Sheet. Periksa koneksi internet Anda.', 'error');
             }
-            window.allStudentsScores.sort((a, b) => b.totalSkor - a.totalSkor);
-            safeSetStorage('biodiv_recap_scores', window.allStudentsScores);
-            window.renderRecapTable();
-            Swal.fire('Tersimpan!', 'Nilaimu berhasil disimpan ke Tabel Rekap Kelas.', 'success');
         };
 
-        // Fungsi Mode Guru: Aktifkan / Nonaktifkan Edit
+        // =========================================================================
+        // WAJIB IDENTITAS SISWA (DROPDOWN NAMA GOOGLE SHEET & KELAS) SEBELUM JAWAB SOAL
+        // =========================================================================
+        window.openStudentIdentityModal = async function(onSuccessCallback = null) {
+            if (window.studentNamesList.length === 0 && isWebAppConfigured()) {
+                Swal.fire({
+                    title: 'Memuat Daftar Siswa...',
+                    text: 'Mengambil daftar nama dari Google Sheet...',
+                    allowOutsideClick: false,
+                    didOpen: () => Swal.showLoading()
+                });
+                await muatRekapDariGoogleSheet();
+                Swal.close();
+            }
+
+            const nameOptions = window.studentNamesList.length > 0
+                ? window.studentNamesList.map(n => `<option value="${n.replace(/"/g, '&quot;')}" ${n === state.studentName ? 'selected' : ''}>${n}</option>`).join('')
+                : `<option value="" disabled>Belum ada daftar nama di Google Sheet</option>`;
+
+            const { value: formValues } = await Swal.fire({
+                title: 'Identitas Siswa',
+                html: `
+                    <p class="text-sm text-gray-600 mb-4">Silakan pilih <b>Nama Siswa</b> dan <b>Kelas</b> terlebih dahulu sebelum mulai menjawab soal.</p>
+                    <div class="text-left space-y-3">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Nama Siswa (Google Sheet)</label>
+                            <select id="swal-student-name" class="w-full border-2 border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-eco-500">
+                                <option value="">-- Pilih Nama Siswa --</option>
+                                ${nameOptions}
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Kelas</label>
+                            <select id="swal-student-class" class="w-full border-2 border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-eco-500">
+                                <option value="">-- Pilih Kelas --</option>
+                                <option value="KELAS X" ${state.studentClass === 'KELAS X' ? 'selected' : ''}>KELAS X</option>
+                                <option value="KELAS XI" ${state.studentClass === 'KELAS XI' ? 'selected' : ''}>KELAS XI</option>
+                                <option value="KELAS XII" ${state.studentClass === 'KELAS XII' ? 'selected' : ''}>KELAS XII</option>
+                            </select>
+                        </div>
+                    </div>
+                `,
+                focusConfirm: false,
+                showCancelButton: true,
+                confirmButtonText: 'Lanjutkan',
+                cancelButtonText: 'Batal',
+                confirmButtonColor: '#16a34a',
+                preConfirm: () => {
+                    const selectedName = document.getElementById('swal-student-name').value.trim();
+                    const selectedClass = document.getElementById('swal-student-class').value.trim();
+                    if (!selectedName) {
+                        Swal.showValidationMessage('Silakan pilih Nama Siswa terlebih dahulu!');
+                        return false;
+                    }
+                    if (!selectedClass) {
+                        Swal.showValidationMessage('Silakan pilih Kelas terlebih dahulu!');
+                        return false;
+                    }
+                    return { name: selectedName, studentClass: selectedClass };
+                }
+            });
+
+            if (formValues) {
+                state.studentName = formValues.name;
+                state.studentClass = formValues.studentClass;
+                safeSetStorage('biodiv_student_name', state.studentName);
+                safeSetStorage('biodiv_student_class', state.studentClass);
+                updateStudentBadge();
+
+                if (window.currentScreen === 'recap') {
+                    populateRecapNameDropdown();
+                    const classEl = document.getElementById('student-class-input');
+                    if (classEl) classEl.value = state.studentClass;
+                }
+
+                if (typeof onSuccessCallback === 'function') {
+                    onSuccessCallback();
+                }
+            }
+        };
+
+        window.requireStudentIdentity = function(onSuccessCallback) {
+            if (window.isTeacherMode || (state.studentName && state.studentClass)) {
+                onSuccessCallback();
+            } else {
+                window.openStudentIdentityModal(onSuccessCallback);
+            }
+        };
+
+        // =========================================================================
+        // MODE GURU (PASSWORD: 007011 - TIDAK DITAMPILKAN DI UI)
+        // =========================================================================
         window.toggleTeacherMode = async function() {
             if (!window.isTeacherMode) {
                 const { value: pin } = await Swal.fire({
                     title: 'Akses Mode Guru',
                     input: 'password',
-                    inputLabel: 'Masukkan PIN Guru (Default: 1234)',
+                    inputLabel: 'Masukkan PIN Guru',
                     inputPlaceholder: 'Masukkan PIN...',
                     showCancelButton: true,
                     confirmButtonColor: '#16a34a'
                 });
-                if (pin === '1234') {
+                if (pin === '007011') {
                     window.isTeacherMode = true;
-                    Swal.fire('Berhasil', 'Mode Guru aktif! Anda dapat mengedit nilai langsung di tabel.', 'success');
-                    window.renderRecapTable();
+                    updateStudentBadge();
+                    Swal.fire('Berhasil', 'Mode Guru aktif! Anda dapat langsung menyinkronkan Tabel Rekap tanpa memasukkan nama dan kelas, serta mengedit atau menghapus data nilai.', 'success');
+                    if (window.currentScreen === 'recap') {
+                        window.navigate('recap');
+                    } else {
+                        window.renderRecapTable();
+                    }
                 } else if (pin !== undefined) {
                     Swal.fire('Salah', 'PIN Guru tidak sesuai.', 'error');
                 }
             } else {
                 window.isTeacherMode = false;
-                window.renderRecapTable();
+                updateStudentBadge();
+                if (window.currentScreen === 'recap') {
+                    window.navigate('recap');
+                } else {
+                    window.renderRecapTable();
+                }
             }
         };
 
-        // Fungsi Edit Nilai Siswa oleh Guru (Sinkron ke Cloud / Lokal)
+        // Fungsi Edit / Hapus Nilai Siswa oleh Guru (Sinkron langsung ke Google Sheet)
         window.editStudentScore = async function(studentId, studentName, currentScore) {
             const { value: newScore, isDenied } = await Swal.fire({
                 title: `Edit Nilai: ${studentName}`,
@@ -292,20 +498,14 @@
             });
 
             if (isDenied) {
-                if (db && firestoreMod) {
-                    try {
-                        const docRef = firestoreMod.doc(db, 'artifacts', appId, 'public', 'data', 'student_scores', studentId);
-                        await firestoreMod.deleteDoc(docRef);
-                        Swal.fire('Terhapus', `Data nilai ${studentName} telah dihapus.`, 'success');
-                        return;
-                    } catch (e) {
-                        console.error(e);
-                    }
+                Swal.fire({ title: 'Menghapus...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+                try {
+                    await kirimNilaiKeGoogleSheet({ action: 'delete', nama: studentName });
+                    await muatRekapDariGoogleSheet();
+                    Swal.fire('Terhapus', `Data nilai ${studentName} telah dihapus dari Google Sheet.`, 'success');
+                } catch (e) {
+                    Swal.fire('Gagal', 'Gagal menghapus data di Google Sheet.', 'error');
                 }
-                window.allStudentsScores = window.allStudentsScores.filter(s => s.id !== studentId);
-                safeSetStorage('biodiv_recap_scores', window.allStudentsScores);
-                window.renderRecapTable();
-                Swal.fire('Terhapus', `Data nilai ${studentName} telah dihapus.`, 'success');
                 return;
             }
 
@@ -315,28 +515,14 @@
                     Swal.fire('Tidak Valid', 'Masukkan angka nilai yang valid (0-100).', 'warning');
                     return;
                 }
-                if (db && firestoreMod) {
-                    try {
-                        const docRef = firestoreMod.doc(db, 'artifacts', appId, 'public', 'data', 'student_scores', studentId);
-                        await firestoreMod.updateDoc(docRef, {
-                            totalSkor: parsedScore,
-                            timestamp: new Date().toISOString()
-                        });
-                        Swal.fire('Tersimpan', `Nilai ${studentName} diperbarui menjadi ${parsedScore}.`, 'success');
-                        return;
-                    } catch (e) {
-                        console.error(e);
-                    }
+                Swal.fire({ title: 'Menyimpan...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+                try {
+                    await kirimNilaiKeGoogleSheet({ action: 'edit', nama: studentName, nilaiAkhir: parsedScore });
+                    await muatRekapDariGoogleSheet();
+                    Swal.fire('Tersimpan', `Nilai ${studentName} diperbarui menjadi ${parsedScore} di Google Sheet.`, 'success');
+                } catch (e) {
+                    Swal.fire('Gagal', 'Gagal memperbarui nilai di Google Sheet.', 'error');
                 }
-                const target = window.allStudentsScores.find(s => s.id === studentId);
-                if (target) {
-                    target.totalSkor = parsedScore;
-                    target.timestamp = new Date().toISOString();
-                    window.allStudentsScores.sort((a, b) => b.totalSkor - a.totalSkor);
-                    safeSetStorage('biodiv_recap_scores', window.allStudentsScores);
-                    window.renderRecapTable();
-                }
-                Swal.fire('Tersimpan', `Nilai ${studentName} diperbarui menjadi ${parsedScore}.`, 'success');
             }
         };
 
@@ -356,6 +542,7 @@
                             <tr style="background-color: #166534; color: #ffffff; font-weight: bold;">
                                 <th>Rank</th>
                                 <th>Nama Siswa</th>
+                                <th>Kelas</th>
                                 <th>Nilai Akhir (Skala 100)</th>
                                 <th>Modul 1</th>
                                 <th>Modul 2</th>
@@ -379,6 +566,7 @@
                     <tr>
                         <td align="center">${idx + 1}</td>
                         <td>${s.nama}</td>
+                        <td align="center">${s.kelas || '-'}</td>
                         <td align="center" style="font-weight: bold; background-color: #dcfce7;">${s.totalSkor}</td>
                         <td align="center">${m.M1 ?? 0}</td>
                         <td align="center">${m.M2 ?? 0}</td>
@@ -390,7 +578,7 @@
                         <td align="center">${m.M8 ?? 0}</td>
                         <td align="center">${m.M9 ?? 0}</td>
                         <td align="center">${s.evaluasi ?? 0}</td>
-                        <td align="center">${new Date(s.timestamp).toLocaleString('id-ID')}</td>
+                        <td align="center">${s.waktuSync || '-'}</td>
                     </tr>
                 `;
             });
@@ -406,7 +594,7 @@
             const link = document.createElement("a");
             const url = URL.createObjectURL(blob);
             link.setAttribute("href", url);
-            link.setAttribute("download", "Rekap_Nilai_Biosfer_Kelas_XI.xls");
+            link.setAttribute("download", "Rekap_Nilai_Biosfer.xls");
             link.style.visibility = 'hidden';
             document.body.appendChild(link);
             link.click();
@@ -423,7 +611,7 @@
                 pemantik: "Pernahkah kamu berpikir, mengapa kehidupan hanya ditemukan di Bumi dan terkonsentrasi di lapisan tipis tertentu?",
                 content: `
                     <h3 class="text-2xl font-bold text-eco-800 mb-4">Apa itu Biosfer?</h3>
-                    <p class="mb-4 text-gray-700 leading-relaxed">Biosfer berasal dari kata <i>bios</i> (hidup) dan <i>sphaira</i> (lapisan). Secara harfiah, biosfer adalah lapisan tempat makhluk hidup bernaung. Biosfer bukan hanya tentang makhluk hidupnya saja, tetapi juga interaksinya dengan lingkungan fisik bumi (litosfer, hidrosfer, dan atmosfer).</p>
+                    <p class="mb-4 text-gray-700 leading-relaxed">Biosfer berasal dari kata <i>bios</i> (hidup) dan <i>sphaira</i> (lapisan). Secara hariah, biosfer adalah lapisan tempat makhluk hidup bernaung. Biosfer bukan hanya tentang makhluk hidupnya saja, tetapi juga interaksinya dengan lingkungan fisik bumi (litosfer, hidrosfer, dan atmosfer).</p>
                     <div class="bg-eco-50 border-l-4 border-eco-500 p-4 mb-6 rounded-r">
                         <strong>Fakta Unik:</strong> Jika bumi diibaratkan sebuah apel, biosfer hanyalah setipis kulit apel tersebut!
                     </div>
@@ -839,15 +1027,6 @@
             { name: "Bunga Bangkai", sci: "Amorphophallus titanum", type: "Flora", region: "Asiatis", status: "Terancam (EN)", img: "https://placehold.co/400x300/4c1d95/ffffff?text=Bunga+Bangkai" }
         ];
 
-        // --- STATE MANAGEMENT ---
-        let state = {
-            progress: safeGetStorage('biodiv_progress', []),
-            score: parseInt(safeGetStorage('biodiv_score', 0), 10) || 0,
-            moduleScores: safeGetStorage('biodiv_mod_scores', {}),
-            evalScore: parseInt(safeGetStorage('biodiv_eval_score', 0), 10) || 0,
-            currentModule: null
-        };
-
         function updateScore(points) {
             state.score += points;
             safeSetStorage('biodiv_score', state.score);
@@ -867,6 +1046,12 @@
         const container = document.getElementById('app-container');
 
         window.navigate = function(screen, param = null) {
+            // Jika hendak mengisi kuis modul, wajib pilih nama & kelas terlebih dahulu (kecuali Mode Guru)
+            if (screen === 'quiz' && !window.isTeacherMode && (!state.studentName || !state.studentClass)) {
+                window.requireStudentIdentity(() => window.navigate('quiz', param));
+                return;
+            }
+
             window.currentScreen = screen;
             const mobileMenu = document.getElementById('mobile-menu');
             if (mobileMenu) mobileMenu.classList.add('hidden');
@@ -891,7 +1076,10 @@
             if (screen === 'quiz') setTimeout(window.loadQuestion, 30);
             if (screen === 'simulation') bindSimulationEvents();
             if (screen === 'gallery') bindGalleryEvents();
-            if (screen === 'recap') window.renderRecapTable();
+            if (screen === 'recap') {
+                window.renderRecapTable();
+                muatRekapDariGoogleSheet();
+            }
         };
         const navigate = window.navigate;
 
@@ -914,7 +1102,10 @@
                             <button onclick="navigate('dashboard')" class="bg-eco-500 hover:bg-eco-400 text-white font-bold py-3 px-8 rounded-full text-lg shadow-lg transition transform hover:scale-105">
                                 <i class="fa-solid fa-rocket mr-2"></i> Mulai Belajar
                             </button>
-                            <button onclick="Swal.fire({title:'Petunjuk Penggunaan', html:'1. Buka <b>Modul</b> untuk membaca materi.<br>2. Selesaikan <b>Kuis</b> di setiap modul untuk mendapat poin.<br>3. Gunakan <b>Simulasi</b> untuk interaksi visual.<br>4. Uji kemampuanmu di <b>Evaluasi Akhir</b>.', icon:'info', confirmButtonColor: '#22c55e'})" class="bg-transparent border-2 border-white hover:bg-white hover:text-eco-900 text-white font-bold py-3 px-8 rounded-full text-lg transition">
+                            <button onclick="navigate('recap')" class="bg-yellow-500 hover:bg-yellow-400 text-slate-900 font-bold py-3 px-8 rounded-full text-lg shadow-lg transition transform hover:scale-105">
+                                <i class="fa-solid fa-table-list mr-2"></i> Lihat Rekap Nilai Kelas
+                            </button>
+                            <button onclick="Swal.fire({title:'Petunjuk Penggunaan', html:'1. Buka <b>Modul</b> untuk membaca materi.<br>2. Pilih <b>Nama Siswa & Kelas</b> sebelum mengisi <b>Kuis</b> atau <b>Evaluasi Akhir</b>.<br>3. Gunakan <b>Simulasi</b> untuk interaksi visual.<br>4. Cek hasil seluruh siswa secara langsung di menu <b>Rekap Nilai</b>.', icon:'info', confirmButtonColor: '#22c55e'})" class="bg-transparent border-2 border-white hover:bg-white hover:text-eco-900 text-white font-bold py-3 px-8 rounded-full text-lg transition">
                                 <i class="fa-solid fa-circle-question mr-2"></i> Petunjuk
                             </button>
                         </div>
@@ -952,7 +1143,7 @@
                         <h2 class="text-3xl font-bold text-eco-900"><i class="fa-solid fa-book-open mr-2"></i> Dashboard Pembelajaran</h2>
                         <p class="text-gray-600 mt-2">Pilih modul pembelajaran di bawah ini secara berurutan.</p>
                         
-                        <div class="mt-4 flex gap-4">
+                        <div class="mt-4 flex flex-wrap gap-4">
                             <button onclick="navigate('evaluation')" class="bg-red-600 text-white px-4 py-2 rounded-lg font-bold shadow hover:bg-red-700"><i class="fa-solid fa-pen-to-square mr-1"></i> Evaluasi Akhir</button>
                             <button onclick="navigate('project')" class="bg-ocean-600 text-white px-4 py-2 rounded-lg font-bold shadow hover:bg-ocean-700"><i class="fa-solid fa-people-group mr-1"></i> Projek Kolaboratif</button>
                         </div>
@@ -1017,11 +1208,18 @@
             window.currentQuizScore = 0;
             window.currentModuleId = id;
 
+            const identityLabel = window.isTeacherMode
+                ? 'Mode Guru'
+                : `${state.studentName} (${state.studentClass})`;
+
             return `
                 <div class="max-w-3xl mx-auto px-4 py-12 w-full">
                     <div class="bg-white rounded-xl shadow-xl overflow-hidden">
-                        <div class="bg-eco-600 p-4 text-white flex justify-between items-center">
-                            <h3 class="font-bold text-lg">Kuis Modul ${id}</h3>
+                        <div class="bg-eco-600 p-4 text-white flex flex-wrap justify-between items-center gap-2">
+                            <div>
+                                <h3 class="font-bold text-lg">Kuis Modul ${id}</h3>
+                                <span class="text-xs text-eco-100"><i class="fa-solid fa-user mr-1"></i> ${identityLabel}</span>
+                            </div>
                             <span class="text-sm bg-eco-800 px-3 py-1 rounded-full">Soal <span id="q-counter">1</span> / ${questions.length}</span>
                         </div>
                         <div class="p-8" id="quiz-body">
@@ -1052,6 +1250,11 @@
         };
 
         window.checkAnswer = function(selectedIndex) {
+            if (!window.isTeacherMode && (!state.studentName || !state.studentClass)) {
+                window.openStudentIdentityModal();
+                return;
+            }
+
             const q = window.currentQuizQuestions[window.currentQuizIndex];
             const isCorrect = (selectedIndex === q.a);
             
@@ -1078,15 +1281,23 @@
             // Simpan skor per modul
             state.moduleScores[window.currentModuleId] = window.currentQuizScore;
             safeSetStorage('biodiv_mod_scores', state.moduleScores);
+
+            const identityLabel = window.isTeacherMode
+                ? 'Mode Guru'
+                : `${state.studentName} &bull; ${state.studentClass}`;
             
             let resultHtml = `
                 <div class="text-center">
                     <div class="text-6xl mb-4 ${isPassed ? 'text-eco-500' : 'text-red-500'}">
                         <i class="fa-solid ${isPassed ? 'fa-trophy' : 'fa-face-frown'}"></i>
                     </div>
-                    <h3 class="text-2xl font-bold mb-2">Skor: ${window.currentQuizScore} dari ${total}</h3>
+                    <h3 class="text-2xl font-bold mb-1">Skor: ${window.currentQuizScore} dari ${total}</h3>
+                    <p class="text-xs text-gray-500 mb-3">${identityLabel}</p>
                     <p class="text-gray-600 mb-6">${isPassed ? 'Hebat! Kamu menguasai materi ini.' : 'Jangan menyerah, baca lagi materinya dan ulangi ya!'}</p>
-                    <button onclick="navigate('module', ${window.currentModuleId})" class="bg-eco-600 text-white px-6 py-2 rounded-full font-bold shadow hover:bg-eco-700 mr-2">Kembali ke Modul</button>
+                    <div class="flex flex-wrap justify-center gap-3">
+                        <button onclick="navigate('module', ${window.currentModuleId})" class="bg-eco-600 text-white px-6 py-2 rounded-full font-bold shadow hover:bg-eco-700">Kembali ke Modul</button>
+                        <button onclick="navigate('recap')" class="bg-ocean-600 text-white px-6 py-2 rounded-full font-bold shadow hover:bg-ocean-700"><i class="fa-solid fa-cloud-arrow-up mr-1"></i> Kirim & Lihat Rekap</button>
+                    </div>
                 </div>
             `;
             document.getElementById('quiz-body').innerHTML = resultHtml;
@@ -1155,37 +1366,29 @@
             let simHtml = '';
             
             if (type === 'indonesia-map' || !type) {
-                // Default to interactive map of Indonesia Zones
                 simHtml = `
                     <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-100">
                         <h3 class="text-2xl font-bold text-eco-800 mb-2">Simulasi Zona Wallace & Weber</h3>
                         <p class="text-gray-600 mb-6">Arahkan kursor atau klik pada wilayah untuk melihat fauna endemiknya.</p>
                         
                         <div class="relative w-full overflow-hidden bg-[#e0f2fe] rounded-lg border-2 border-blue-200" style="aspect-ratio: 2/1;">
-                            <!-- Simplified SVG Map of Indonesia -->
                             <svg viewBox="0 0 1000 500" class="w-full h-full">
-                                <!-- Zona Asiatis -->
                                 <path id="reg-asiatis" class="map-region fill-green-600 stroke-green-800 hover:fill-green-500" d="M100,200 L250,150 L350,250 L300,350 L150,300 Z M280,350 L400,320 L450,400 L300,420 Z" />
                                 <text x="250" y="280" class="font-bold text-white text-xl pointer-events-none">ASIATIS</text>
                                 
-                                <!-- Garis Wallace -->
                                 <path d="M480,100 L450,500" class="map-line" />
                                 <text x="460" y="120" class="fill-red-500 font-bold pointer-events-none text-sm transform -rotate-90">Garis Wallace</text>
 
-                                <!-- Zona Peralihan -->
                                 <path id="reg-peralihan" class="map-region fill-amber-500 stroke-amber-700 hover:fill-amber-400" d="M500,200 L600,180 L650,250 L600,350 L500,320 Z M520,380 L620,380 L650,420 L550,440 Z" />
                                 <text x="540" y="280" class="font-bold text-white text-xl pointer-events-none">PERALIHAN</text>
 
-                                <!-- Garis Weber -->
                                 <path d="M680,100 L700,500" class="map-line" />
                                 <text x="690" y="120" class="fill-red-500 font-bold pointer-events-none text-sm transform -rotate-90">Garis Weber</text>
 
-                                <!-- Zona Australis -->
                                 <path id="reg-australis" class="map-region fill-blue-500 stroke-blue-700 hover:fill-blue-400" d="M750,250 L950,200 L900,400 L720,350 Z" />
                                 <text x="800" y="300" class="font-bold text-white text-xl pointer-events-none">AUSTRALIS</text>
                             </svg>
                             
-                            <!-- Info Panel Overlay -->
                             <div id="map-info" class="absolute bottom-4 right-4 glass-panel p-4 rounded-lg shadow-lg w-64 hidden transform transition duration-300">
                                 <h4 id="info-title" class="font-bold text-eco-900 border-b pb-1 mb-2">Wilayah</h4>
                                 <p id="info-desc" class="text-sm text-gray-700">Pilih wilayah pada peta.</p>
@@ -1203,7 +1406,6 @@
                     </div>
                 `;
             } else if (type === 'climate') {
-                // Biome Climate Simulator
                 simHtml = `
                     <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-100">
                         <h3 class="text-2xl font-bold text-eco-800 mb-2">Simulator Iklim & Bioma</h3>
@@ -1243,7 +1445,6 @@
                     </div>
                 `;
             } else if (type === 'deforestation') {
-                // Deforestation Impact Simulator
                 simHtml = `
                     <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-100">
                         <h3 class="text-2xl font-bold text-red-800 mb-2">Simulasi Dampak Kerusakan Habitat</h3>
@@ -1262,7 +1463,6 @@
                             </div>
                             
                             <div class="w-full md:w-2/3 flex items-center justify-center bg-stone-300 rounded-lg overflow-hidden relative min-h-[300px]">
-                                <!-- Green Forest Layer shrinking from left to right -->
                                 <div id="def-visual" class="absolute left-0 top-0 bottom-0 bg-green-500 transition-all duration-300 ease-linear" style="width: 100%"></div>
                                 
                                 <div class="relative z-10 text-center glass-panel p-6 m-4 w-3/4 shadow-lg rounded-xl">
@@ -1294,7 +1494,6 @@
         }
 
         function bindSimulationEvents() {
-            // Indonesia Map Logic
             const asiatis = document.getElementById('reg-asiatis');
             const peralihan = document.getElementById('reg-peralihan');
             const australis = document.getElementById('reg-australis');
@@ -1319,7 +1518,6 @@
             if(peralihan) peralihan.addEventListener('mouseover', () => showInfo('peralihan'));
             if(australis) australis.addEventListener('mouseover', () => showInfo('australis'));
 
-            // Climate Simulator Logic
             const simTemp = document.getElementById('sim-temp');
             const simRain = document.getElementById('sim-rain');
             const tempVal = document.getElementById('temp-val');
@@ -1361,7 +1559,6 @@
                 simRain.addEventListener('input', updateBiome);
             }
             
-            // Deforestation Simulator Logic
             const simDef = document.getElementById('sim-def');
             const defVal = document.getElementById('def-val');
             const defStatus = document.getElementById('def-status');
@@ -1376,7 +1573,6 @@
                     const val = parseInt(e.target.value);
                     defVal.innerText = val;
                     
-                    // Simple non-linear calculation for population drop
                     let pop = 100 - (val * 1.3);
                     if(pop < 0) pop = 0;
                     
@@ -1384,7 +1580,7 @@
                     defVisual.style.width = (100 - val) + '%';
                     
                     if(val >= 80) {
-                        defVisual.style.backgroundColor = '#b91c1c'; // Red
+                        defVisual.style.backgroundColor = '#b91c1c';
                         defStatus.innerText = 'Kritis / Punah Lokal';
                         defStatus.className = 'text-red-700 font-bold';
                         defPop.className = 'font-bold text-xl text-red-700';
@@ -1392,7 +1588,7 @@
                         defDesc.innerText = 'Habitat Hancur';
                         defInfo.innerText = 'Tidak ada ruang jelajah tersisa. Populasi satwa endemik musnah atau terpaksa masuk ke permukiman.';
                     } else if(val >= 40) {
-                        defVisual.style.backgroundColor = '#eab308'; // Yellow
+                        defVisual.style.backgroundColor = '#eab308';
                         defStatus.innerText = 'Terancam / Terfragmentasi';
                         defStatus.className = 'text-yellow-600 font-bold';
                         defPop.className = 'font-bold text-xl text-yellow-600';
@@ -1400,7 +1596,7 @@
                         defDesc.innerText = 'Hutan Terfragmentasi';
                         defInfo.innerText = 'Habitat terpecah belah. Jalur migrasi terputus dan ketersediaan pakan mulai menipis drastis.';
                     } else {
-                        defVisual.style.backgroundColor = '#22c55e'; // Green
+                        defVisual.style.backgroundColor = '#22c55e';
                         defStatus.innerText = 'Utuh / Seimbang';
                         defStatus.className = 'text-green-600 font-bold';
                         defPop.className = 'font-bold text-xl text-green-600';
@@ -1413,16 +1609,20 @@
         }
 
         function renderEvaluation() {
-            // State for evaluation
             window.evalIndex = 0;
             window.evalScore = 0;
             window.evalAnswers = [];
             const totalEval = evaluationQuestions.length;
 
+            const identityLabel = window.isTeacherMode
+                ? 'Mode Guru'
+                : (state.studentName ? `${state.studentName} (${state.studentClass})` : '');
+
             let btnHtml = evaluationQuestions.map((q, i) => `
                 <div class="hidden" id="eval-q-${i}">
-                    <div class="mb-4">
+                    <div class="mb-4 flex justify-between items-center">
                         <span class="bg-red-100 text-red-800 text-xs font-bold px-2 py-1 rounded uppercase tracking-wide">Evaluasi Akhir : Soal ${i+1}/${totalEval}</span>
+                        <span id="eval-student-info" class="text-xs text-gray-500 font-semibold">${identityLabel}</span>
                     </div>
                     <h4 class="text-xl font-bold text-gray-800 mb-6">${q.q}</h4>
                     <div class="space-y-3">
@@ -1460,14 +1660,23 @@
         }
 
         window.startEval = function() {
-            document.getElementById('eval-intro').classList.add('hidden');
-            document.getElementById('eval-q-0').classList.remove('hidden');
+            window.requireStudentIdentity(() => {
+                document.querySelectorAll('#eval-student-info').forEach(el => {
+                    el.innerText = window.isTeacherMode ? 'Mode Guru' : `${state.studentName} (${state.studentClass})`;
+                });
+                document.getElementById('eval-intro').classList.add('hidden');
+                document.getElementById('eval-q-0').classList.remove('hidden');
+            });
         };
 
         window.answerEval = function(qIndex, selectedIdx) {
+            if (!window.isTeacherMode && (!state.studentName || !state.studentClass)) {
+                window.openStudentIdentityModal();
+                return;
+            }
+
             window.evalAnswers[qIndex] = selectedIdx;
             
-            // Check if correct
             if(selectedIdx === evaluationQuestions[qIndex].a) {
                 window.evalScore++;
             }
@@ -1487,7 +1696,6 @@
             const resContainer = document.getElementById('eval-result');
             resContainer.classList.remove('hidden');
             
-            // Simpan skor evaluasi
             state.evalScore = window.evalScore;
             safeSetStorage('biodiv_eval_score', state.evalScore);
 
@@ -1496,37 +1704,72 @@
             else if (scorePercent >= 60) feedback = "Cukup baik, namun masih perlu meninjau ulang materi spesifik.";
             else feedback = "Jangan putus asa! Mari pelajari kembali modul-modul sebelumnya.";
 
+            const identityLabel = window.isTeacherMode
+                ? 'Mode Guru'
+                : `${state.studentName} &bull; ${state.studentClass}`;
+
             resContainer.innerHTML = `
                 <div class="text-6xl mb-4 ${scorePercent >= 60 ? 'text-eco-500' : 'text-amber-500'}">
                     <i class="fa-solid ${scorePercent >= 80 ? 'fa-medal' : 'fa-star-half-stroke'}"></i>
                 </div>
-                <h3 class="text-3xl font-bold mb-2">Nilai Akhir: ${scorePercent}</h3>
+                <h3 class="text-3xl font-bold mb-1">Nilai Akhir: ${scorePercent}</h3>
+                <p class="text-xs text-gray-500 mb-2">${identityLabel}</p>
                 <p class="text-gray-600 mb-6 font-medium">${window.evalScore} Benar dari ${total} Soal</p>
                 <div class="bg-gray-100 p-4 rounded-lg mb-6 text-left">
                     <p class="text-sm text-gray-800 italic">"${feedback}"</p>
                 </div>
-                <button onclick="navigate('dashboard')" class="bg-slate-800 text-white px-6 py-2 rounded-full font-bold hover:bg-slate-700 transition">Kembali ke Dashboard</button>
+                <div class="flex flex-wrap justify-center gap-3">
+                    <button onclick="navigate('dashboard')" class="bg-slate-800 text-white px-6 py-2 rounded-full font-bold hover:bg-slate-700 transition">Kembali ke Dashboard</button>
+                    <button onclick="navigate('recap')" class="bg-ocean-600 text-white px-6 py-2 rounded-full font-bold hover:bg-ocean-700 transition"><i class="fa-solid fa-cloud-arrow-up mr-1"></i> Kirim & Lihat Rekap</button>
+                </div>
             `;
 
             if(scorePercent >= 60) {
-                updateScore(100); // Bonus score
+                updateScore(100);
             }
         };
 
         function renderRecapPage() {
-            // Hitung total skor sementara dari perangkat ini
             let totalBenarLokal = state.evalScore || 0;
             for(let i=1; i<=9; i++) totalBenarLokal += (state.moduleScores[i] || 0);
             let skorMaksimum100 = Math.round((totalBenarLokal / 65) * 100);
 
+            const nameOptions = window.studentNamesList.map(nama => {
+                const selected = (nama === state.studentName) ? 'selected' : '';
+                return `<option value="${nama.replace(/"/g, '&quot;')}" ${selected}>${nama}</option>`;
+            }).join('');
+
+            const identitySectionHtml = window.isTeacherMode
+                ? `
+                    <div class="bg-amber-50 border border-amber-300 text-amber-900 rounded-lg p-3.5 text-sm flex items-start gap-2.5">
+                        <i class="fa-solid fa-user-tie text-amber-600 mt-0.5"></i>
+                        <div>
+                            <div class="font-bold">Mode Guru Aktif</div>
+                            <p class="text-xs text-amber-800 mt-0.5">Tidak perlu memasukkan Nama Siswa dan Kelas untuk menyinkronkan Tabel Rekap.</p>
+                        </div>
+                    </div>
+                `
+                : `
+                    <select id="student-name-input" onchange="state.studentName=this.value; safeSetStorage('biodiv_student_name', this.value); updateStudentBadge();" class="w-full border-2 border-gray-300 rounded-lg px-4 py-2.5 bg-white focus:outline-none focus:border-eco-500">
+                        <option value="">-- Pilih Nama Siswa (dari Google Sheet) --</option>
+                        ${nameOptions}
+                    </select>
+                    <select id="student-class-input" onchange="state.studentClass=this.value; safeSetStorage('biodiv_student_class', this.value); updateStudentBadge();" class="w-full border-2 border-gray-300 rounded-lg px-4 py-2.5 bg-white focus:outline-none focus:border-eco-500">
+                        <option value="">-- Pilih Kelas --</option>
+                        <option value="KELAS X" ${state.studentClass === 'KELAS X' ? 'selected' : ''}>KELAS X</option>
+                        <option value="KELAS XI" ${state.studentClass === 'KELAS XI' ? 'selected' : ''}>KELAS XI</option>
+                        <option value="KELAS XII" ${state.studentClass === 'KELAS XII' ? 'selected' : ''}>KELAS XII</option>
+                    </select>
+                `;
+
             return `
                 <div class="max-w-7xl mx-auto px-4 py-8 w-full">
                     <h2 class="text-3xl font-bold text-eco-900 mb-2"><i class="fa-solid fa-table-list mr-2"></i> Sinkronisasi & Rekap Nilai</h2>
-                    <p class="text-gray-600 mb-8">Papan peringkat dan rekap nilai yang terhubung langsung ke Server Kelas (Cloud).</p>
+                    <p class="text-gray-600 mb-8">Papan peringkat dan rekap nilai yang terhubung langsung ke Google Sheet Kelas.</p>
                     
                     <div class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden mb-8">
                         <div class="bg-eco-600 p-4 text-white">
-                            <h3 class="font-bold text-lg">Kirim Nilai Kamu</h3>
+                            <h3 class="font-bold text-lg">${window.isTeacherMode ? 'Sinkronisasi Tabel Rekap (Mode Guru)' : 'Kirim Nilai Kamu ke Google Sheet'}</h3>
                         </div>
                         <div class="p-6 flex flex-col md:flex-row items-center gap-6">
                             <div class="flex-1">
@@ -1534,8 +1777,8 @@
                                 <div class="text-4xl font-extrabold text-eco-600">${skorMaksimum100} <span class="text-lg text-gray-400">/ 100</span></div>
                                 <p class="text-xs text-gray-400 mt-2">Dari ${totalBenarLokal} jawaban benar dari total 65 pertanyaan.</p>
                             </div>
-                            <div class="flex-1 w-full">
-                                <input type="text" id="student-name-input" placeholder="Masukkan Nama Lengkapmu..." class="w-full border-2 border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:border-eco-500 mb-2">
+                            <div class="flex-1 w-full space-y-2.5">
+                                ${identitySectionHtml}
                                 <button onclick="window.submitToCloud()" class="w-full bg-ocean-600 hover:bg-ocean-700 text-white font-bold py-3 rounded-lg shadow transition">
                                     <i class="fa-solid fa-cloud-arrow-up mr-2"></i> Sinkronkan ke Tabel Rekap
                                 </button>
@@ -1547,9 +1790,18 @@
                         <div class="bg-slate-800 p-4 text-white flex flex-wrap justify-between items-center gap-3">
                             <div>
                                 <h3 class="font-bold text-lg"><i class="fa-solid fa-users mr-2"></i> Tabel Rekap Kelas (Live Sheet)</h3>
-                                <span class="text-xs text-slate-300">Tersinkronisasi otomatis secara real-time</span>
+                                <span class="text-xs text-slate-300">Tersinkronisasi otomatis dengan Google Sheet secara real-time</span>
                             </div>
-                            <div class="flex gap-2">
+                            <div class="flex flex-wrap items-center gap-2">
+                                <select onchange="window.selectedClassFilter=this.value; window.renderRecapTable();" class="text-xs bg-slate-700 text-white border border-slate-600 font-semibold px-3 py-2 rounded focus:outline-none">
+                                    <option value="ALL" ${window.selectedClassFilter === 'ALL' ? 'selected' : ''}>Semua Kelas</option>
+                                    <option value="KELAS X" ${window.selectedClassFilter === 'KELAS X' ? 'selected' : ''}>KELAS X</option>
+                                    <option value="KELAS XI" ${window.selectedClassFilter === 'KELAS XI' ? 'selected' : ''}>KELAS XI</option>
+                                    <option value="KELAS XII" ${window.selectedClassFilter === 'KELAS XII' ? 'selected' : ''}>KELAS XII</option>
+                                </select>
+                                <button onclick="muatRekapDariGoogleSheet()" class="text-xs bg-ocean-600 hover:bg-ocean-500 text-white font-bold px-3 py-2 rounded shadow transition" title="Muat ulang data terbaru">
+                                    <i class="fa-solid fa-rotate mr-1"></i> Refresh
+                                </button>
                                 <button onclick="window.toggleTeacherMode()" class="text-xs bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold px-3 py-2 rounded shadow transition">
                                     <i class="fa-solid fa-user-tie mr-1"></i> <span id="teacher-mode-label">Mode Guru (Edit)</span>
                                 </button>
@@ -1559,7 +1811,7 @@
                             </div>
                         </div>
                         <div class="overflow-x-auto p-4" id="recap-table-container">
-                            <div class="text-center text-gray-500 py-8"><i class="fa-solid fa-spinner fa-spin text-2xl mb-2"></i><br>Memuat data dari server...</div>
+                            <div class="text-center text-gray-500 py-8"><i class="fa-solid fa-spinner fa-spin text-2xl mb-2"></i><br>Memuat data dari Google Sheet...</div>
                         </div>
                     </div>
                 </div>
@@ -1572,12 +1824,16 @@
             if(labelBtn) labelBtn.innerText = window.isTeacherMode ? 'Keluar Mode Guru' : 'Mode Guru (Edit)';
             if(!container) return;
 
-            if(window.allStudentsScores.length === 0) {
-                container.innerHTML = `<div class="text-center text-gray-500 py-8">Belum ada data nilai siswa yang disinkronkan.</div>`;
+            const filteredScores = window.selectedClassFilter === 'ALL'
+                ? window.allStudentsScores
+                : window.allStudentsScores.filter(s => (s.kelas || '').toUpperCase() === window.selectedClassFilter);
+
+            if(filteredScores.length === 0) {
+                container.innerHTML = `<div class="text-center text-gray-500 py-8">Belum ada data nilai siswa yang ditampilkan${window.selectedClassFilter !== 'ALL' ? ' untuk ' + window.selectedClassFilter : ''}.</div>`;
                 return;
             }
 
-            let rows = window.allStudentsScores.map((s, index) => {
+            let rows = filteredScores.map((s, index) => {
                 let modCells = '';
                 for(let i=1; i<=9; i++) {
                     modCells += `<td class="py-2 px-3 border-b text-center text-sm">${s.modul && s.modul[`M${i}`] !== undefined ? s.modul[`M${i}`] : '-'}</td>`;
@@ -1595,10 +1851,11 @@
                     <tr class="hover:bg-gray-50 transition">
                         <td class="py-2 px-3 border-b text-center font-bold">${index + 1}</td>
                         <td class="py-2 px-3 border-b font-medium">${s.nama}</td>
+                        <td class="py-2 px-3 border-b text-center text-xs font-semibold text-slate-600">${s.kelas || '-'}</td>
                         <td class="py-2 px-3 border-b text-center font-bold text-eco-600 bg-eco-50">${s.totalSkor}</td>
                         ${modCells}
-                        <td class="py-2 px-3 border-b text-center font-bold text-ocean-600">${s.evaluasi || '-'}</td>
-                        <td class="py-2 px-3 border-b text-center text-xs text-gray-400">${new Date(s.timestamp).toLocaleTimeString()}</td>
+                        <td class="py-2 px-3 border-b text-center font-bold text-ocean-600">${s.evaluasi ?? '-'}</td>
+                        <td class="py-2 px-3 border-b text-center text-xs text-gray-400">${s.waktuSync || '-'}</td>
                         ${actionCell}
                     </tr>
                 `;
@@ -1610,6 +1867,7 @@
                         <tr class="bg-gray-100 text-gray-700 text-sm">
                             <th class="py-2 px-3 border-b text-center">Rank</th>
                             <th class="py-2 px-3 border-b">Nama Siswa</th>
+                            <th class="py-2 px-3 border-b text-center">Kelas</th>
                             <th class="py-2 px-3 border-b text-center bg-eco-100">Nilai Akhir (100)</th>
                             <th class="py-2 px-3 border-b text-center" colspan="9">Skor Modul (Max 5)</th>
                             <th class="py-2 px-3 border-b text-center">Evaluasi (Max 20)</th>
@@ -1617,7 +1875,7 @@
                             ${window.isTeacherMode ? '<th class="py-2 px-3 border-b text-center bg-amber-100">Aksi Guru</th>' : ''}
                         </tr>
                         <tr class="bg-gray-50 text-gray-500 text-xs text-center">
-                            <th></th><th></th><th></th>
+                            <th></th><th></th><th></th><th></th>
                             <th>M1</th><th>M2</th><th>M3</th><th>M4</th><th>M5</th><th>M6</th><th>M7</th><th>M8</th><th>M9</th>
                             <th></th><th></th>
                             ${window.isTeacherMode ? '<th></th>' : ''}
@@ -1665,10 +1923,12 @@
             document.getElementById('mobile-menu').classList.toggle('hidden');
         });
 
-        // Initialize Score Display, Load Home & Connect Firebase
+        // Inisialisasi Tampilan Skor, Identitas Siswa, Halaman Awal & Auto-Sync Google Sheet
         document.getElementById('nav-score').innerText = state.score + " Poin";
+        updateStudentBadge();
         window.navigate('home');
-        initFirebase();
+        muatRekapDariGoogleSheet();
+        setInterval(muatRekapDariGoogleSheet, 15000);
 
     </script>
 </body>
