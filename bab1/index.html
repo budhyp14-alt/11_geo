@@ -1,1 +1,470 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Geografi Kelas 11: Posisi Strategis Indonesia</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Plus Jakarta Sans', 'sans-serif'],
+          },
+          animation: {
+            'float': 'float 4s ease-in-out infinite',
+            'pulse-glow': 'pulseGlow 3s infinite',
+          },
+          keyframes: {
+            float: {
+              '0%, 100%': { transform: 'translateY(0px)' },
+              '50%': { transform: 'translateY(-12px)' },
+            },
+            pulseGlow: {
+              '0%, 100%': { opacity: '0.6', filter: 'drop-shadow(0 0 15px rgba(59, 130, 246, 0.5))' },
+              '50%': { opacity: '1', filter: 'drop-shadow(0 0 30px rgba(139, 92, 246, 0.8))' },
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .glass {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+    }
+    .glass-dark {
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans antialiased selection:bg-cyan-500 selection:text-white">
 
+  <!-- NAVIGATION -->
+  <nav class="fixed top-0 left-0 right-0 z-50 glass-dark transition-all duration-300">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 via-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-lg shadow-cyan-500/30">
+          <i class="fa-solid me-0 fa-earth-asia text-xl animate-spin-slow"></i>
+        </div>
+        <span class="font-extrabold text-xl tracking-wide bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-blue-300 to-indigo-200">
+          GEO<span class="text-cyan-400">XI</span> DEEP
+        </span>
+      </div>
+
+      <!-- Desktop Nav -->
+      <div class="hidden md:flex items-center space-x-8 text-sm font-semibold">
+        <a href="#konsep" class="hover:text-cyan-400 transition-colors">Konsep Lokasi</a>
+        <a href="#analisis" class="hover:text-cyan-400 transition-colors">Pengaruh Strategis</a>
+        <a href="#hots" class="hover:text-cyan-400 transition-colors">Tantangan HOTS</a>
+        <a href="#proyek" class="px-4 py-2 rounded-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 hover:scale-105 transition-all">Aktivitas Nyata</a>
+      </div>
+
+      <!-- Mobile Toggle -->
+      <button id="menu-btn" class="md:hidden text-2xl text-slate-300 focus:outline-none">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+    </div>
+
+    <!-- Mobile Nav Menu -->
+    <div id="mobile-menu" class="hidden md:hidden glass-dark border-t border-slate-800 px-6 py-4 space-y-4">
+      <a href="#konsep" class="block hover:text-cyan-400">Konsep Lokasi</a>
+      <a href="#analisis" class="block hover:text-cyan-400">Pengaruh Strategis</a>
+      <a href="#hots" class="block hover:text-cyan-400">Tantangan HOTS</a>
+      <a href="#proyek" class="block text-cyan-400 font-bold">Aktivitas Nyata</a>
+    </div>
+  </nav>
+
+  <!-- HERO SECTION -->
+  <section class="relative min-h-screen pt-28 pb-16 flex items-center justify-center overflow-hidden bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 via-indigo-950 to-slate-950">
+    <!-- Animated Glowing Orbs -->
+    <div class="absolute top-1/4 left-10 w-72 h-72 bg-cyan-500/20 rounded-full blur-3xl animate-float"></div>
+    <div class="absolute bottom-1/4 right-10 w-96 h-96 bg-purple-600/20 rounded-full blur-3xl animate-float" style="animation-delay: 2s;"></div>
+
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 text-center relative z-10">
+      <span class="px-4 py-2 rounded-full glass text-cyan-300 text-xs sm:text-sm font-semibold tracking-wider uppercase inline-block mb-6 shadow-xl border border-cyan-500/30">
+        <i class="fa-solid fa-graduation-cap me-2"></i>Kurikulum Pembelajaran Mendalam
+      </span>
+      <h1 class="text-4xl sm:text-6xl md:text-7xl font-black text-white tracking-tight leading-tight mb-6">
+        Posisi Strategis <br>
+        <span class="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-teal-300 to-indigo-400">
+          Indonesia di Mata Dunia
+        </span>
+      </h1>
+      <p class="text-slate-300 text-base sm:text-lg md:text-xl max-w-3xl mx-auto mb-10 leading-relaxed font-light">
+        Eksplorasi interaktif posisi astronomis, geografis, dan geologis Indonesia serta dampaknya terhadap iklim, perekonomian, budaya, dan kekayaan alam.
+      </p>
+
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+        <a href="#konsep" class="w-full sm:w-auto px-8 py-4 rounded-2xl bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 text-white font-bold text-lg shadow-xl shadow-cyan-500/30 hover:scale-105 transition-all flex items-center justify-center gap-3">
+          <span>Mulai Petualangan</span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </a>
+        <a href="#proyek" class="w-full sm:w-auto px-8 py-4 rounded-2xl glass hover:bg-white/20 text-white font-semibold text-lg transition-all flex items-center justify-center gap-2">
+          <i class="fa-solid fa-rocket text-cyan-400"></i>
+          <span>Aktivitas Proyek</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 1: KONSEP LOKASI (TP 1 & TP 2) -->
+  <section id="konsep" class="py-24 bg-slate-900 relative">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl sm:text-5xl font-extrabold text-white mb-4">
+          1. Menguak <span class="text-cyan-400">Konsep Lokasi</span>
+        </h2>
+        <p class="text-slate-400 max-w-2xl mx-auto">
+          Klik tab di bawah untuk mempelajari penerapan konsep lokasi absolut, relatif, dan struktural Indonesia.
+        </p>
+      </div>
+
+      <!-- Interactive Tab Buttons -->
+      <div class="flex justify-center mb-10 gap-2 sm:gap-4 p-2 bg-slate-950/80 rounded-2xl max-w-2xl mx-auto border border-slate-800">
+        <button onclick="switchTab('astronomis')" id="tab-astronomis" class="tab-btn flex-1 py-3 px-4 rounded-xl font-bold text-sm sm:text-base transition-all bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg">
+          <i class="fa-solid fa-globe me-2"></i>Astronomis
+        </button>
+        <button onclick="switchTab('geografis')" id="tab-geografis" class="tab-btn flex-1 py-3 px-4 rounded-xl font-bold text-sm sm:text-base transition-all text-slate-400 hover:text-white">
+          <i class="fa-solid fa-compass me-2"></i>Geografis
+        </button>
+        <button onclick="switchTab('geologis')" id="tab-geologis" class="tab-btn flex-1 py-3 px-4 rounded-xl font-bold text-sm sm:text-base transition-all text-slate-400 hover:text-white">
+          <i class="fa-solid fa-volcano me-2"></i>Geologis
+        </button>
+      </div>
+
+      <!-- Tab Contents -->
+      <div id="content-container" class="glass-dark rounded-3xl p-6 sm:p-10 border border-slate-800 shadow-2xl transition-all duration-500">
+        <!-- Content will be rendered dynamically by JS -->
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 2: ANALISIS PENGARUH (TP 3) -->
+  <section id="analisis" class="py-24 bg-slate-950 relative overflow-hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <span class="text-cyan-400 text-sm font-bold tracking-widest uppercase">Dampak Multidimensi</span>
+        <h2 class="text-3xl sm:text-5xl font-extrabold text-white mt-2">
+          2. Analisis Pengaruh Strategis
+        </h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <!-- Card 1 -->
+        <div class="glass-dark rounded-3xl p-8 hover:border-cyan-500/50 hover:-translate-y-2 transition-all duration-300 group">
+          <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-amber-500 to-orange-600 flex items-center justify-center text-white text-2xl mb-6 shadow-lg shadow-orange-500/20 group-hover:scale-110 transition-transform">
+            <i class="fa-solid fa-cloud-sun-rain"></i>
+          </div>
+          <h3 class="text-2xl font-bold text-white mb-4">Iklim & Cuaca</h3>
+          <ul class="space-y-3 text-slate-300 text-sm leading-relaxed">
+            <li class="flex items-start gap-2">
+              <i class="fa-solid fa-circle-check text-cyan-400 mt-1"></i>
+              <span><strong>Iklim Tropis Basah:</strong> Suhu stabil ($26^\circ\text{C}-28^\circ\text{C}$) & sinar matahari sepanjang tahun.</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <i class="fa-solid fa-circle-check text-cyan-400 mt-1"></i>
+              <span><strong>Angin Muson:</strong> Muson Barat (Hujan) & Muson Timur (Kemarau).</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <i class="fa-solid fa-circle-check text-cyan-400 mt-1"></i>
+              <span><strong>3 Zona Waktu:</strong> Pembagian WIB, WITA, dan WIT akibat garis bujur.</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="glass-dark rounded-3xl p-8 hover:border-blue-500/50 hover:-translate-y-2 transition-all duration-300 group">
+          <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-blue-500 to-indigo-600 flex items-center justify-center text-white text-2xl mb-6 shadow-lg shadow-blue-500/20 group-hover:scale-110 transition-transform">
+            <i class="fa-solid fa-ship"></i>
+          </div>
+          <h3 class="text-2xl font-bold text-white mb-4">Ekonomi & Budaya</h3>
+          <ul class="space-y-3 text-slate-300 text-sm leading-relaxed">
+            <li class="flex items-start gap-2">
+              <i class="fa-solid fa-circle-check text-cyan-400 mt-1"></i>
+              <span><strong>Chokepoints Dunia:</strong> Menguasai Selat Malaka, Sunda, Lombok, & Makassar.</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <i class="fa-solid fa-circle-check text-cyan-400 mt-1"></i>
+              <span><strong>Jalur Perdagangan Energi:</strong> Urat nadi transportasi minyak/gas Asia-Pasifik.</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <i class="fa-solid fa-circle-check text-cyan-400 mt-1"></i>
+              <span><strong>Akulturasi Budaya:</strong> Titik temu berbagai peradaban dunia.</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="glass-dark rounded-3xl p-8 hover:border-emerald-500/50 hover:-translate-y-2 transition-all duration-300 group">
+          <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-600 flex items-center justify-center text-white text-2xl mb-6 shadow-lg shadow-emerald-500/20 group-hover:scale-110 transition-transform">
+            <i class="fa-solid fa-gem"></i>
+          </div>
+          <h3 class="text-2xl font-bold text-white mb-4">Sumber Daya Alam</h3>
+          <ul class="space-y-3 text-slate-300 text-sm leading-relaxed">
+            <li class="flex items-start gap-2">
+              <i class="fa-solid fa-circle-check text-cyan-400 mt-1"></i>
+              <span><strong>Tanah Subur Vulkanis:</strong> Abu gunung api kaya hara untuk pertanian.</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <i class="fa-solid fa-circle-check text-cyan-400 mt-1"></i>
+              <span><strong>Tambang Melimpah:</strong> Cadangan nikel, emas, tembaga, & batu bara.</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <i class="fa-solid fa-circle-check text-cyan-400 mt-1"></i>
+              <span><strong>Megadiversity:</strong> Fauna Asiatis, Peralihan, dan Australis (Wallace-Weber).</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 3: TANTANGAN HOTS -->
+  <section id="hots" class="py-24 bg-slate-900 relative">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <span class="text-purple-400 text-sm font-bold tracking-widest uppercase">Pemikiran Kritis</span>
+        <h2 class="text-3xl sm:text-5xl font-extrabold text-white mt-2">
+          3. Analisis Tantangan HOTS
+        </h2>
+      </div>
+
+      <div class="space-y-6">
+        <!-- Question 1 -->
+        <div class="glass-dark rounded-2xl p-6 sm:p-8 border border-slate-800">
+          <h3 class="text-lg sm:text-xl font-bold text-cyan-300 mb-3">
+            <i class="fa-solid fa-brain me-2"></i>Dilema Geologis
+          </h3>
+          <p class="text-slate-200 text-base mb-4 font-medium">
+            "Mengapa wilayah yang paling kaya akan barang tambang dan tanah subur di Indonesia justru wilayah yang paling rawan gempa dan letusan gunung berapi?"
+          </p>
+          <button onclick="toggleAnswer('ans1')" class="text-sm font-bold text-cyan-400 hover:text-cyan-300 flex items-center gap-2">
+            <span>Lihat Analisis Jawaban</span>
+            <i id="icon-ans1" class="fa-solid fa-chevron-down transition-transform"></i>
+          </button>
+          <div id="ans1" class="hidden mt-4 pt-4 border-t border-slate-800 text-slate-300 text-sm leading-relaxed">
+            Sifat geologis Indonesia yang berada pada zona tumbukan lempeng tektonik (*subduksi*) dan *Ring of Fire* menyebabkan magma naik membawa mineral tambang berharga ke permukaan. Erupsi vulkanik mengeluarkan abu vulkanik yang kaya nutrisi hara. Jadi, proses alam yang membawa kesuburan dan mineral itulah yang sekaligus memicu aktivitas gempa dan letusan gunung api.
+          </div>
+        </div>
+
+        <!-- Question 2 -->
+        <div class="glass-dark rounded-2xl p-6 sm:p-8 border border-slate-800">
+          <h3 class="text-lg sm:text-xl font-bold text-purple-300 mb-3">
+            <i class="fa-solid fa-coins me-2"></i>Tantangan Ekonomi Maritim
+          </h3>
+          <p class="text-slate-200 text-base mb-4 font-medium">
+            "Sebesar 40% kapal perdagangan dunia melewati perairan Indonesia, namun mengapa pendapatan maritim Indonesia belum maksimal dibanding negara tetangga?"
+          </p>
+          <button onclick="toggleAnswer('ans2')" class="text-sm font-bold text-purple-400 hover:text-purple-300 flex items-center gap-2">
+            <span>Lihat Analisis Jawaban</span>
+            <i id="icon-ans2" class="fa-solid fa-chevron-down transition-transform"></i>
+          </button>
+          <div id="ans2" class="hidden mt-4 pt-4 border-t border-slate-800 text-slate-300 text-sm leading-relaxed">
+            Hal ini dipengaruhi oleh keterbatasan infrastruktur pelabuhan hub internasional, layanan pengisian bahan bakar (*bunkering*), galangan kapal, serta regulasi jasa logistik yang belum seefisien pelabuhan transit utama seperti Singapura. Optimalisasi memerlukan pembenahan infrastruktur terpadu dan kemudahan regulasi maritim.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 4: PROYEK AKTIVITAS NYATA (TP 4) -->
+  <section id="proyek" class="py-24 bg-slate-950 relative">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <span class="text-cyan-400 text-sm font-bold tracking-widest uppercase">Aplikasi Kehidupan Nyata</span>
+        <h2 class="text-3xl sm:text-5xl font-extrabold text-white mt-2">
+          4. Pilih Proyek Pembelajaran
+        </h2>
+        <p class="text-slate-400 max-w-2xl mx-auto mt-2">
+          Pilihlah salah satu opsi proyek berbasis tantangan dunia nyata di bawah ini.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <!-- Opsi A -->
+        <div class="glass-dark rounded-3xl p-8 border border-slate-800 flex flex-col justify-between hover:border-red-500/50 transition-all">
+          <div>
+            <span class="px-3 py-1 rounded-full bg-red-500/20 text-red-400 text-xs font-bold uppercase">Opsi A</span>
+            <h3 class="text-2xl font-bold text-white mt-4 mb-3">Mitigasi Bencana Geologi</h3>
+            <p class="text-slate-400 text-sm mb-6">
+              Merancang Peta Digital / Poster Panduan Evakuasi Bencana untuk lingkungan sekolah atau tempat tinggal.
+            </p>
+            <div class="space-y-2 text-xs text-slate-300">
+              <p><i class="fa-solid fa-check text-red-400 me-2"></i>Identifikasi potensi ancaman lokal</p>
+              <p><i class="fa-solid fa-check text-red-400 me-2"></i>Tentukan titik kumpul aman</p>
+              <p><i class="fa-solid fa-check text-red-400 me-2"></i>Susun SOP Tas Siaga Bencana</p>
+            </div>
+          </div>
+          <button onclick="selectProject('Opsi A: Mitigasi Bencana')" class="mt-8 w-full py-3 rounded-xl bg-red-600/80 hover:bg-red-600 text-white font-bold transition-all shadow-lg shadow-red-600/20">
+            Pilih Proyek Ini
+          </button>
+        </div>
+
+        <!-- Opsi B -->
+        <div class="glass-dark rounded-3xl p-8 border border-slate-800 flex flex-col justify-between hover:border-amber-500/50 transition-all">
+          <div>
+            <span class="px-3 py-1 rounded-full bg-amber-500/20 text-amber-400 text-xs font-bold uppercase">Opsi B</span>
+            <h3 class="text-2xl font-bold text-white mt-4 mb-3">Kalender Pertanian & Usaha</h3>
+            <p class="text-slate-400 text-sm mb-6">
+              Merancang Kalender Masa Tanam/Usaha berbasis pola pergeseran iklim dan Angin Muson.
+            </p>
+            <div class="space-y-2 text-xs text-slate-300">
+              <p><i class="fa-solid fa-check text-amber-400 me-2"></i>Wawancara pelaku usaha/petani</p>
+              <p><i class="fa-solid fa-check text-amber-400 me-2"></i>Analisis bulan Angin Muson</p>
+              <p><i class="fa-solid fa-check text-amber-400 me-2"></i>Strategi minim risiko kegagalan</p>
+            </div>
+          </div>
+          <button onclick="selectProject('Opsi B: Kalender Pertanian')" class="mt-8 w-full py-3 rounded-xl bg-amber-600/80 hover:bg-amber-600 text-white font-bold transition-all shadow-lg shadow-amber-600/20">
+            Pilih Proyek Ini
+          </button>
+        </div>
+
+        <!-- Opsi C -->
+        <div class="glass-dark rounded-3xl p-8 border border-slate-800 flex flex-col justify-between hover:border-cyan-500/50 transition-all">
+          <div>
+            <span class="px-3 py-1 rounded-full bg-cyan-500/20 text-cyan-400 text-xs font-bold uppercase">Opsi C</span>
+            <h3 class="text-2xl font-bold text-white mt-4 mb-3">Ekonomi Maritim Daerah</h3>
+            <p class="text-slate-400 text-sm mb-6">
+              Menyusun Proposal Ide Bisnis / Wisata Maritim memanfaatkan lokasi strategis perairan lokal.
+            </p>
+            <div class="space-y-2 text-xs text-slate-300">
+              <p><i class="fa-solid fa-check text-cyan-400 me-2"></i>Observasi jalur perairan terdekat</p>
+              <p><i class="fa-solid fa-check text-cyan-400 me-2"></i>Analisis potensi eduwisata/logistik</p>
+              <p><i class="fa-solid fa-check text-cyan-400 me-2"></i>Rencana kelestarian ekosistem</p>
+            </div>
+          </div>
+          <button onclick="selectProject('Opsi C: Ekonomi Maritim')" class="mt-8 w-full py-3 rounded-xl bg-cyan-600/80 hover:bg-cyan-600 text-white font-bold transition-all shadow-lg shadow-cyan-600/20">
+            Pilih Proyek Ini
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="py-8 bg-slate-950 border-t border-slate-800 text-center text-slate-500 text-sm">
+    <p>© 2026 Modul Pembelajaran Geografi Kelas XI - Pembelajaran Mendalam (Deep Learning)</p>
+  </footer>
+
+  <!-- JAVASCRIPT LOGIC -->
+  <script>
+    // Data Container for Tabs
+    const tabData = {
+      astronomis: {
+        title: "Letak Astronomis (Lokasi Absolut)",
+        badge: "Koordinat Mutlak",
+        icon: "fa-globe text-cyan-400",
+        desc: "Posisi berdasarkan garis khayal bumi (garis lintang dan bujur) yang bersifat mutlak.",
+        points: [
+          "<strong>Koordinat Persis:</strong> 6° LU - 11° LS dan 95° BT - 141° BT.",
+          "<strong>Penerapan Konsep:</strong> Dasar sistem penentuan koordinat GPS digital, kedaulatan wilayah udara, serta zona iklim matahari.",
+          "<strong>Dampak Langsung:</strong> Beriklim tropis basah dan terbagi menjadi 3 Zona Waktu (WIB, WITA, WIT)."
+        ]
+      },
+      geografis: {
+        title: "Letak Geografis (Lokasi Relatif)",
+        badge: "Posisi Silang Dunia",
+        icon: "fa-compass text-blue-400",
+        desc: "Posisi berdasarkan kondisi nyata di permukaan bumi terhadap objek sekitarnya.",
+        points: [
+          "<strong>Aksentuasi Posisi:</strong> Diapit 2 Benua (Asia & Australia) dan 2 Samudra (Hindia & Pasifik).",
+          "<strong>Penerapan Konsep:</strong> Menjadikan Indonesia sebagai *Transit Hub* pelayaran & penerbangan internasional.",
+          "<strong>Dampak Langsung:</strong> Dilalui Angin Muson (perubahan musim) & akulturasi kebudayaan global."
+        ]
+      },
+      geologis: {
+        title: "Letak Geologis (Lokasi Struktural)",
+        badge: "Bawah Tanah & Tektonik",
+        icon: "fa-volcano text-orange-400",
+        desc: "Posisi berdasarkan struktur batuan dan lempeng kerak bumi.",
+        points: [
+          "<strong>Struktur Kerak Bumi:</strong> Pertemuan 3 Lempeng (Eurasia, Indo-Australia, Pasifik) & 2 Sirkum (Mediterania, Pasifik).",
+          "<strong>Penerapan Konsep:</strong> Laboratorium alam vulkanologi & daerah kaya mineralitas tambang.",
+          "<strong>Dampak Langsung:</strong> Rawan bencana tektonik/vulkanik, namun memiliki tanah subur vulkanis."
+        ]
+      }
+    };
+
+    function renderTabContent(key) {
+      const data = tabData[key];
+      const container = document.getElementById('content-container');
+      
+      container.innerHTML = `
+        <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-8">
+          <div>
+            <span class="px-3 py-1 rounded-full bg-slate-800 text-cyan-400 text-xs font-bold tracking-wider uppercase mb-3 inline-block">
+              ${data.badge}
+            </span>
+            <h3 class="text-2xl sm:text-4xl font-extrabold text-white flex items-center gap-3">
+              <i class="fa-solid ${data.icon}"></i>
+              ${data.title}
+            </h3>
+          </div>
+        </div>
+        <p class="text-slate-300 text-base sm:text-lg mb-8 leading-relaxed font-light">
+          ${data.desc}
+        </p>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          ${data.points.map(pt => `
+            <div class="bg-slate-900/90 rounded-2xl p-6 border border-slate-800 hover:border-slate-700 transition-all">
+              <p class="text-slate-200 text-sm leading-relaxed">${pt}</p>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    function switchTab(key) {
+      // Reset button styles
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.className = "tab-btn flex-1 py-3 px-4 rounded-xl font-bold text-sm sm:text-base transition-all text-slate-400 hover:text-white";
+      });
+      
+      // Active style
+      const activeBtn = document.getElementById(`tab-${key}`);
+      activeBtn.className = "tab-btn flex-1 py-3 px-4 rounded-xl font-bold text-sm sm:text-base transition-all bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg";
+
+      renderTabContent(key);
+    }
+
+    function toggleAnswer(id) {
+      const ans = document.getElementById(id);
+      const icon = document.getElementById(`icon-${id}`);
+      if (ans.classList.contains('hidden')) {
+        ans.classList.remove('hidden');
+        icon.style.transform = 'rotate(180deg)';
+      } else {
+        ans.classList.add('hidden');
+        icon.style.transform = 'rotate(0deg)';
+      }
+    }
+
+    function selectProject(name) {
+      alert(`Selamat! Kamu memilih ${name}. Silakan rancang langkah kerja sesuai panduan di modul.`);
+    }
+
+    // Mobile menu toggle
+    document.getElementById('menu-btn').addEventListener('click', () => {
+      const menu = document.getElementById('mobile-menu');
+      menu.classList.toggle('hidden');
+    });
+
+    // Initialize Default Tab
+    document.addEventListener('DOMContentLoaded', () => {
+      renderTabContent('astronomis');
+    });
+  </script>
+</body>
+</html>
